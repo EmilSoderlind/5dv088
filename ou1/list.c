@@ -1,4 +1,4 @@
-#include "linkedList.h"
+#include "list.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,12 +21,9 @@ node *linkedList_create(){
 // Traverse through list and free one after the other.
 void linkedList_free(node *rootNode){
   printf("linkedList_free\n");
-  int k = 5;
 
   bool doneTraverse = false;
   node *currentNode = rootNode;
-
-  k = 3;
 
   while(doneTraverse == false){
 
@@ -98,7 +95,10 @@ void linkedList_print(node *rootNode){
       printf("uname: %s\n",currentValue->uname);
       printf("--\n");
     }else{
-      printf("ROOT-NOOODE!\n");
+      printf("%d\n", index);
+      printf("uid: root\n");
+      printf("uname: root\n");
+      printf("--\n");
     }
 
     if(currentNode->next == NULL){

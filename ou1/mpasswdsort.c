@@ -1,12 +1,38 @@
-#include "linkedList.c"
+#include "list.c"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <errno.h>
 
-int main(){
-  //printf("Hello, World! %x \n",rootNode->next);
+void fileDemo(int argc, char *argv[]){
+
+
+    FILE *fp;
+    char ch;
+
+        fp=fopen(argv[1],"r");
+
+        if(fp==NULL){
+            printf("Some problem in opening the file\n");
+            exit(0);
+        }else{
+
+            while((ch=fgetc(fp))!=EOF){
+                printf("%c",ch);
+            }
+        }
+
+        fclose(fp);
+
+
+
+}
+
+int main(int argc, char *argv[]){
   printf("Starting mpasswdsort.c\n");
+
+fileDemo(argc, argv);
 
   node *rootNode = linkedList_create();
 
@@ -36,9 +62,10 @@ int main(){
 
   linkedList_free(rootNode);
 
-
   return 0;
 }
+
+
 
 
 user_info* user_info_create(int i, char *name){
