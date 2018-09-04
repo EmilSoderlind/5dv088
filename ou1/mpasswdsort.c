@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 int main(){
   //printf("Hello, World! %x \n",rootNode->next);
@@ -9,19 +10,27 @@ int main(){
 
   node *rootNode = linkedList_create();
 
-  printf("2\n");
 
-  user_info *testUser = malloc(sizeof(user_info));
+    user_info *value = malloc(sizeof(user_info));
+    value->uid = 3;
+    value->uname = "Emil";
 
-  testUser->uid = 3;
+    user_info *valueTwo = malloc(sizeof(user_info));
+    valueTwo->uid = 24;
+    valueTwo->uname = "Simon";
 
-  testUser->uname = "Hello";
 
-  printf("%s\n", testUser->uname);
+  linkedList_append(rootNode, value);
+  linkedList_append(rootNode, valueTwo);
 
-  printf("3\n");
 
-  linkedList_append(rootNode,testUser);
+/*
+  char *text = "Hello";
+  unsigned int i = 5;
+  user_info* valueThree = user_info_create(i,text);
+
+  linkedList_append(rootNode, valueThree);
+*/
 
   linkedList_print(rootNode);
 
@@ -29,4 +38,13 @@ int main(){
 
 
   return 0;
+}
+
+
+user_info* user_info_create(int i, char *name){
+  user_info *ui = malloc(sizeof(user_info));
+  ui->uid = (unsigned int) i;
+  ui->uname = name;
+
+return ui;
 }

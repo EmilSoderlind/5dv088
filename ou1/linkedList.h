@@ -1,4 +1,3 @@
-int returnNumber(int);
 
 typedef struct node {
   struct node* prev;
