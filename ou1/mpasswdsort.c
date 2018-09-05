@@ -98,7 +98,6 @@ int main(int argc, char *argv[])
 				printf("GECOS: %s ", GECOS);
 				printf("directory: %s ", directory);
 				printf("shell: %s\n", shell);
-
 				*/
 
 				char *ptr;
