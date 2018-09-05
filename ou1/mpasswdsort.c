@@ -39,7 +39,6 @@ int main(int argc, char *argv[])
 		int lineNumber = 1;
 		char *line;
 		size_t bufsize = 1023;
-		int characters;
 		bool reachedEOF = false;
 
 		line = malloc(bufsize * sizeof(char));
@@ -72,7 +71,7 @@ int main(int argc, char *argv[])
 				}
 
 				char *UID = malloc(bufsize * sizeof(char));
-				char *username = malloc(bufsize * sizeof(char));
+				char *username = malloc((bufsize+1) * sizeof(char));
 
 				char *password = malloc(bufsize * sizeof(char));
 				char *GID = malloc(bufsize * sizeof(char));
