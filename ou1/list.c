@@ -103,3 +103,51 @@ void linkedList_print(node *rootNode){
   }
 
 }
+
+void linkedList_swapNodes(node *a, node *b)
+{
+
+  user_info* tempA_UI = a->value;
+  user_info* tempB_UI = b->value;
+
+  a->value = tempB_UI;
+  b->value = tempA_UI;
+
+}
+
+
+void linkedList_sort(node *start)
+{
+
+  bool swapped = true;
+
+  node *node1 = start->next;
+
+  if (start->next == NULL) // Empty list
+  {
+    fprintf(stderr, "ERROR: Empty file\n");
+    exit(1);
+  }
+
+  do
+  {
+    swapped = false;
+    node1 = start->next;
+
+    while (node1->next != NULL)
+    {
+
+      unsigned int uid1 = (unsigned int)(((user_info*)(node1->value))->uid);
+      user_info *nextUI = ((user_info *)(node1->next)->value);
+      unsigned int uid2 = (unsigned int)(nextUI->uid);
+      
+      if(uid1 > uid2)
+      {
+        linkedList_swapNodes(node1,node1->next);
+        swapped = true;
+      }
+      node1 = node1->next;
+
+    }
+  } while (swapped);
+}

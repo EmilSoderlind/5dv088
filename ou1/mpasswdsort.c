@@ -9,7 +9,7 @@
 int main(int argc, char *argv[])
 {
 
-	node *unsortedList = linkedList_create();
+	node *list = linkedList_create();
 	node *sortedList = linkedList_create();
 
 	FILE *fp;
@@ -83,15 +83,7 @@ int main(int argc, char *argv[])
 				sscanf(line, "%s %s %s %s %s %s %s", username, password, UID, GID, GECOS, directory, shell);
 
 				// CHECK STUFF
-				/*
-				printf("username: %s ", username);
-				printf("password: %s ", password);
-				printf("UID: %s ", UID);
-				printf("GID: %s ", GID);
-				printf("GECOS: %s ", GECOS);
-				printf("directory: %s ", directory);
-				printf("shell: %s\n", shell);
-				*/
+				
 
 				char *ptr;
 
@@ -100,7 +92,7 @@ int main(int argc, char *argv[])
 				newValue->uid = strtol(UID,&ptr,10);
 				newValue->uname = username;
 
-				linkedList_append(unsortedList, newValue);
+				linkedList_append(list, newValue);
 
 				free(password);
 				free(UID);
@@ -120,30 +112,12 @@ int main(int argc, char *argv[])
 	}
 	fclose(fp);
 
-	
+	linkedList_print(list);
+	printf("-- SORTING --\n");
+	linkedList_sort(list);
+	linkedList_print(list);
 
 
-
-
-	/*
-	node *rootNode = linkedList_create();
-
-	user_info *value = malloc(sizeof(user_info));
-	value->uid = 3;
-	value->uname = "Emil";
-
-	user_info *valueTwo = malloc(sizeof(user_info));
-	valueTwo->uid = 24;
-	valueTwo->uname = "Simon";
-
-	linkedList_append(rootNode, value);
-	linkedList_append(rootNode, valueTwo);
-
-
-	linkedList_free(rootNode);*/
-
+	linkedList_free(list);
 	return 0;
-
-	linkedList_print(unsortedList);
-	linkedList_free(unsortedList);
 }
