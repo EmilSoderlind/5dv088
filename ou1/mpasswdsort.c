@@ -10,7 +10,6 @@ int main(int argc, char *argv[])
 {
 
 	node *list = linkedList_create();
-	node *sortedList = linkedList_create();
 
 	FILE *fp;
 
