@@ -28,6 +28,7 @@ void linkedList_free(node *rootNode){
 
       user_info *currValue = currentNode->value;
       //free(currValue->uname);
+      free(currValue->uname);
       free(currValue);
     }
 

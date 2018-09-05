@@ -73,14 +73,14 @@ int main(int argc, char *argv[])
 
 				char *UID = malloc(bufsize * sizeof(char));
 				char *username = malloc(bufsize * sizeof(char));
-				
-				char password[bufsize];
-				char GID[bufsize];
-				char GECOS[bufsize];
-				char directory[bufsize];
-				char shell[bufsize];
 
-				sscanf(line, "%s %s %s %s %s %s %s", username, &password, UID, &GID, &GECOS, &directory, &shell);
+				char *password = malloc(bufsize * sizeof(char));
+				char *GID = malloc(bufsize * sizeof(char));
+				char *GECOS = malloc(bufsize * sizeof(char));
+				char *directory = malloc(bufsize * sizeof(char));
+				char *shell = malloc(bufsize * sizeof(char));
+
+				sscanf(line, "%s %s %s %s %s %s %s", username, password, UID, GID, GECOS, directory, shell);
 
 				// CHECK STUFF
 
@@ -134,14 +134,12 @@ int main(int argc, char *argv[])
 				}
 
 				free(UID);
-
-				/*
 				free(password);
 				free(GID);
 				free(GECOS);
 				free(directory);
 				free(shell);
-				*/
+				
 			}
 			else
 			{
