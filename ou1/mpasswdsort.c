@@ -10,26 +10,19 @@ int main(int argc, char *argv[])
 {
 
 	node *unsortedList = linkedList_create();
+	node *sortedList = linkedList_create();
 
 	FILE *fp;
-	// OM vi har input-parameters ta hand om dom
-	if (argc == 2)
+
+	if (argc == 2) // OM vi har input-parameters ta hand om dom
 	{
 		// Om filen fuckar --> felmeddelande
 		fp = fopen(argv[1], "r");
-
+	
 	}
-	else if (argc == 1)
-	{ // OM inga input-parameters, kolla stdin.
-
+	else if (argc == 1) // Check STDIN
+	{ 
 		fp = stdin;
-
-		// Om ingen stdin --> felmeddelande
-		if (0) //TODO FIX
-		{
-			fprintf(stderr, "ERROR: No input\n");
-			exit(EXIT_FAILURE);
-		}
 	}
 	else if (argc > 2)
 	{ // OM vi har för många input-parameters --> felmeddelande
@@ -127,8 +120,10 @@ int main(int argc, char *argv[])
 	}
 	fclose(fp);
 
-	linkedList_print(unsortedList);
-	linkedList_free(unsortedList);
+	
+
+
+
 
 	/*
 	node *rootNode = linkedList_create();
@@ -148,5 +143,7 @@ int main(int argc, char *argv[])
 	linkedList_free(rootNode);*/
 
 	return 0;
-	
+
+	linkedList_print(unsortedList);
+	linkedList_free(unsortedList);
 }
