@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		int lineNumber = 0;
+		int lineNumber = 1;
 		char *line;
 		size_t bufsize = 1023;
 		int characters;
@@ -49,11 +49,12 @@ int main(int argc, char *argv[])
 			exit(1);
 		}
 
-
 		while (!reachedEOF)
 		{
 			if (getline(&line, &bufsize, fp) != -1)
-			{ // EOF
+			{
+				bool faulthy_row = false;
+
 				line[strlen(line) - 1] = 0; // Remove last /n-char
 
 				for(int i = 0; i<strlen(line);i++){ // Replace " " with _
@@ -78,20 +79,58 @@ int main(int argc, char *argv[])
 				char *directory = malloc(bufsize * sizeof(char));
 				char *shell = malloc(bufsize * sizeof(char));
 
-
 				sscanf(line, "%s %s %s %s %s %s %s", username, password, UID, GID, GECOS, directory, shell);
 
 				// CHECK STUFF
-				
 
-				char *ptr;
+				if (strlen(username) == 0)
+				{
+					printf("ERROR: Line %d is faulthy\n",lineNumber);
+					faulthy_row = true;
+				}
+				else if (strlen(password) == 0)
+				{
+					printf("ERROR: Line %d is faulthy\n", lineNumber);
+					faulthy_row = true;
+				}
+				else if (strlen(UID) == 0)
+				{
+					printf("ERROR: Line %d is faulthy\n", lineNumber);
+					faulthy_row = true;
+				}
+				else if (strlen(GID) == 0)
+				{
+					printf("ERROR: Line %d is faulthy\n", lineNumber);
+					faulthy_row = true;
+				}
+				else if (strlen(GECOS) == 0)
+				{
+					printf("ERROR: Line %d is faulthy\n", lineNumber);
+					faulthy_row = true;
+				}
+				else if (strlen(directory) == 0)
+				{
+					printf("ERROR: Line %d is faulthy\n", lineNumber);
+					faulthy_row = true;
+				}
+				else if (strlen(shell) == 0)
+				{
+					printf("ERROR: Line %d is faulthy\n", lineNumber);
+					faulthy_row = true;
+				}
 
-				// ADD TO LIST
-				user_info *newValue = malloc(sizeof(user_info));
-				newValue->uid = strtol(UID,&ptr,10);
-				newValue->uname = username;
+				if(!faulthy_row){ // Append to list if the row is legit
 
-				linkedList_append(list, newValue);
+					char *ptr;
+
+					// ADD TO LIST
+					user_info *newValue = malloc(sizeof(user_info));
+					newValue->uid = strtol(UID,&ptr,10);
+					newValue->uname = username;
+
+					linkedList_append(list, newValue);
+
+				}
 
 				free(password);
 				free(UID);
