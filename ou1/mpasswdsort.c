@@ -7,6 +7,9 @@
 
 void fileDemo(int argc, char *argv[]){
 
+  bool parsedInput = false;
+
+  while(!parsedInput){
 
     FILE *fp;
     char ch;
@@ -15,22 +18,45 @@ void fileDemo(int argc, char *argv[]){
 
         if(fp==NULL){
             printf("Some problem in opening the file\n");
+
+            // ERROR MESSAGE
             exit(0);
         }else{
-
             while((ch=fgetc(fp))!=EOF){
                 printf("%c",ch);
             }
+            break; // TO BE REMOVED
         }
 
         fclose(fp);
 
-
+      }
 
 }
 
 int main(int argc, char *argv[]){
   printf("Starting mpasswdsort.c\n");
+
+  printf("argc: %d\n", argc);
+
+
+// OM vi har input-parameters ta hand om dom
+  if(argc == 2){
+
+    // Om filen fuckar --> felmeddelande
+
+
+  }else if(argc == 1){ // OM inga input-parameters, kolla stdin.
+
+    // Om ingen stdin --> felmeddelande
+
+
+  }else if(argc > 2){ // OM vi har för många input-parameters --> felmeddelande
+    printf("ERROR: To many parameters\n"); //TODO Fixa stderr senare
+
+  }
+
+
 
 fileDemo(argc, argv);
 
