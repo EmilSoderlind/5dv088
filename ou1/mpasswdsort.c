@@ -87,36 +87,43 @@ int main(int argc, char *argv[])
 				{
 					printf("ERROR: Line %d is faulthy\n",lineNumber);
 					faulthy_row = true;
+					free(username);
 				}
 				else if (strlen(password) == 0)
 				{
 					printf("ERROR: Line %d is faulthy\n", lineNumber);
 					faulthy_row = true;
+					free(username);
 				}
 				else if (strlen(UID) == 0)
 				{
 					printf("ERROR: Line %d is faulthy\n", lineNumber);
 					faulthy_row = true;
+					free(username);
 				}
 				else if (strlen(GID) == 0)
 				{
 					printf("ERROR: Line %d is faulthy\n", lineNumber);
 					faulthy_row = true;
+					free(username);
 				}
 				else if (strlen(GECOS) == 0)
 				{
 					printf("ERROR: Line %d is faulthy\n", lineNumber);
 					faulthy_row = true;
+					free(username);
 				}
 				else if (strlen(directory) == 0)
 				{
 					printf("ERROR: Line %d is faulthy\n", lineNumber);
 					faulthy_row = true;
+					free(username);
 				}
 				else if (strlen(shell) == 0)
 				{
 					printf("ERROR: Line %d is faulthy\n", lineNumber);
 					faulthy_row = true;
+					free(username);
 				}
 
 				if(!faulthy_row){ // Append to list if the row is legit
