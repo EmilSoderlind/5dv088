@@ -8,9 +8,6 @@
 
 int main(int argc, char *argv[])
 {
-	printf("Starting mpasswdsort.c\n");
-
-	printf("argc: %d\n", argc);
 
 	node *unsortedList = linkedList_create();
 
@@ -39,7 +36,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "ERROR: To many parameters\n");
 		exit(EXIT_FAILURE);
 	}
-
+	
 	if (fp == NULL)
 	{
 		fprintf(stderr, "ERROR: Could not open file\n");
@@ -52,8 +49,6 @@ int main(int argc, char *argv[])
 		size_t bufsize = 1023;
 		int characters;
 		bool reachedEOF = false;
-
-		printf("JAKUUB: %s<---\n",line);
 
 		line = malloc(bufsize * sizeof(char));
 		if (line == NULL)
@@ -95,18 +90,7 @@ int main(int argc, char *argv[])
 				sscanf(line, "%s %s %s %s %s %s %s", username, password, UID, GID, GECOS, directory, shell);
 
 				// CHECK STUFF
-
-
-
-
-
-				// ADD TO LIST
-				user_info *newValue = malloc(sizeof(user_info));
-				newValue->uid = strtol(UID);
-				newValue->uname = "Simon";
-
-
-
+				/*
 				printf("username: %s ", username);
 				printf("password: %s ", password);
 				printf("UID: %s ", UID);
@@ -115,8 +99,17 @@ int main(int argc, char *argv[])
 				printf("directory: %s ", directory);
 				printf("shell: %s\n", shell);
 
+				*/
 
-				free(username);
+				char *ptr;
+
+				// ADD TO LIST
+				user_info *newValue = malloc(sizeof(user_info));
+				newValue->uid = strtol(UID,&ptr,10);
+				newValue->uname = username;
+
+				linkedList_append(unsortedList, newValue);
+
 				free(password);
 				free(UID);
 				free(GID);
@@ -132,7 +125,7 @@ int main(int argc, char *argv[])
 		}
 
 		free(line);
-
+	}
 	fclose(fp);
 
 	linkedList_print(unsortedList);
@@ -156,4 +149,5 @@ int main(int argc, char *argv[])
 	linkedList_free(rootNode);*/
 
 	return 0;
+	
 }

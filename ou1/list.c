@@ -6,7 +6,6 @@
 
 // Create linkedList. Returns root-node.
 node *linkedList_create(){
-  printf("linkedList_create\n");
 
   node *rootNode = malloc(sizeof(node));
 
@@ -14,13 +13,11 @@ node *linkedList_create(){
   rootNode->next = NULL;
   rootNode->value = NULL;
 
-  printf("linkedList_create - DONE\n");
   return rootNode;
 }
 
 // Traverse through list and free one after the other.
 void linkedList_free(node *rootNode){
-  printf("linkedList_free\n");
 
   bool doneTraverse = false;
   node *currentNode = rootNode;
@@ -49,11 +46,9 @@ void linkedList_free(node *rootNode){
   }
 
 
-  printf("linkedList_free - DONE\n");
 }
 
 void linkedList_append(node *rootNode, user_info *value){
-  printf("linkedList_append\n");
 
   node *lastNode = NULL;
   node *currentNode = rootNode;
@@ -75,11 +70,9 @@ void linkedList_append(node *rootNode, user_info *value){
   ((node*)(lastNode->next))->value = value; // New node points to its value
   ((node*)(lastNode->next))->next = NULL; // New node next-pointer is NULL
 
-  printf("linkedList_append - DONE\n");
 }
 
 void linkedList_print(node *rootNode){
-  printf("linkedList_print\n");
 
   node *currentNode = rootNode;
   bool foundLastNode = false;
@@ -90,15 +83,14 @@ void linkedList_print(node *rootNode){
     user_info *currentValue = currentNode->value;
 
     if(currentValue != NULL){ // If not root node
-      printf("%d\n", index);
-      printf("uid: %d\n",currentValue->uid);
-      printf("uname: %s\n",currentValue->uname);
-      printf("--\n");
+      printf("%d:%s\n", currentValue->uid, currentValue->uname);
     }else{
+      /*
       printf("%d\n", index);
       printf("uid: root\n");
       printf("uname: root\n");
       printf("--\n");
+      */
     }
 
     if(currentNode->next == NULL){
@@ -110,5 +102,4 @@ void linkedList_print(node *rootNode){
 
   }
 
-  printf("linkedList_print - DONE\n");
 }
