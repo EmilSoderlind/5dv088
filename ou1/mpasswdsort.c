@@ -161,6 +161,10 @@ int main(int argc, char *argv[])
 
 				}
 
+				if(faulthy_row){
+					printf("%s\n",line);
+				}
+
 				free(UID);
 				free(password);
 				free(GID);
