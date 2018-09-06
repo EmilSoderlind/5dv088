@@ -132,6 +132,7 @@ void linkedList_sort(node *start)
 
   do
   {
+
     swapped = false;
     node1 = start->next;
 
@@ -142,13 +143,12 @@ void linkedList_sort(node *start)
       user_info *nextUI = ((user_info *)(node1->next)->value);
       unsigned int uid2 = (unsigned int)(nextUI->uid);
       
-      if(uid1 >= uid2)
+      if(uid1 > uid2)
       {
         linkedList_swapNodes(node1,node1->next);
         swapped = true;
       }
       node1 = node1->next;
-
     }
   } while (swapped);
 }

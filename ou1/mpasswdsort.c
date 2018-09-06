@@ -85,43 +85,43 @@ int main(int argc, char *argv[])
 
 				if (strlen(username) == 0)
 				{
-					printf("ERROR: Line %d is faulthy\n",lineNumber);
+					printf("Line %d: The uname field cannot be empty.\n",lineNumber);
 					faulthy_row = true;
 					free(username);
 				}
 				else if (strlen(password) == 0)
 				{
-					printf("ERROR: Line %d is faulthy\n", lineNumber);
+					printf("Line %d: The password field cannot be empty.\n", lineNumber);
 					faulthy_row = true;
 					free(username);
 				}
 				else if (strlen(UID) == 0)
 				{
-					printf("ERROR: Line %d is faulthy\n", lineNumber);
+					printf("Line %d: The UID field cannot be empty.\n", lineNumber);
 					faulthy_row = true;
 					free(username);
 				}
 				else if (strlen(GID) == 0)
 				{
-					printf("ERROR: Line %d is faulthy\n", lineNumber);
+					printf("Line %d: The GID field cannot be empty.\n", lineNumber);
 					faulthy_row = true;
 					free(username);
 				}
 				else if (strlen(GECOS) == 0)
 				{
-					printf("ERROR: Line %d is faulthy\n", lineNumber);
+					printf("Line %d: The GECOS field cannot be empty.\n", lineNumber);
 					faulthy_row = true;
 					free(username);
 				}
 				else if (strlen(directory) == 0)
 				{
-					printf("ERROR: Line %d is faulthy\n", lineNumber);
+					printf("Line %d: The directory field cannot be empty.\n", lineNumber);
 					faulthy_row = true;
 					free(username);
 				}
 				else if (strlen(shell) == 0)
 				{
-					printf("ERROR: Line %d is faulthy\n", lineNumber);
+					printf("Line %d: The shell field cannot be empty.\n", lineNumber);
 					faulthy_row = true;
 					free(username);
 				}
