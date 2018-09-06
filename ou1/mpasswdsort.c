@@ -6,7 +6,32 @@
 #include <errno.h>
 #include <string.h>
 
-
+/*
+ * Function:  main 
+ * --------------------
+ * 
+ * The program takes a textfile of user-accounts, 
+ * append their repectivly UID:s and usernames to a linked list. 
+ * The program sorts the list and prints the accounts. 
+ * The textfile can be imported via inputparameter aswell as stdin.
+ * 
+ * Example execution:	./mpasswdsort infile
+ * 						./mpasswwdsort < infile
+ * 
+ * Example output:	
+ * 						1171:mr
+ *						12037:set
+ *						12856:axelsson
+ *						12928:dahlin
+ *						16928:gabriel
+ *						17847:fahlgren
+ *
+ *  argc:		number input-parameters
+ * 	argv[]:		Char* pointing to a char-array of input-parameters
+ *
+ *  returns:	EXIT_FAILURE if something goes wrong or a text-row is invalid.
+ * 				EXIT_SUCCESS if execution went succesfully.
+ */
 int main(int argc, char *argv[])
 {
 
@@ -26,12 +51,14 @@ int main(int argc, char *argv[])
 	else if (argc > 2) // Too many input-parameters
 	{ 
 		fprintf(stderr, "ERROR: To many parameters\n");
+		linkedList_free(list);
 		exit(EXIT_FAILURE);
 	}
 	
 	if (fp == NULL)
 	{
 		fprintf(stderr, "ERROR: Could not open file\n");
+		linkedList_free(list);
 		exit(EXIT_FAILURE);
 	}
 	else
@@ -45,6 +72,7 @@ int main(int argc, char *argv[])
 		if (line == NULL)
 		{
 			fprintf(stderr, "ERROR: Unable to allocate buffer\n");
+			linkedList_free(list);
 			exit(1);
 		}
 
@@ -74,7 +102,6 @@ int main(int argc, char *argv[])
 				char *directory = calloc(bufsize, sizeof(char));
 				char *shell = calloc(bufsize, sizeof(char));
 
-				//sscanf(line, "%s %s %s %s %s %s %s", username, password, UID, GID, GECOS, directory, shell);
 				
 				int workingOnFieldNr = 0;
 
@@ -238,9 +265,7 @@ int main(int argc, char *argv[])
 				reachedEOF = true;
 			}
 			lineNumber++;
-
 		}
-
 		free(line);
 	}
 	fclose(fp);

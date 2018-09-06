@@ -4,7 +4,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-// Create linkedList. Returns root-node.
+/*
+ * Function:  node *linkedList_create()
+ * --------------------
+ *
+ *  Creates a linkedlist.
+ * 
+ *  returns:	Pointer to root-node of linkedlist
+ */
 node *linkedList_create(){
 
   node *rootNode = malloc(sizeof(node));
@@ -16,8 +23,16 @@ node *linkedList_create(){
   return rootNode;
 }
 
-// Traverse through list and free one after the other.
-void linkedList_free(node *rootNode){
+/*
+ * Function:  linkedList_free(node *rootNode)
+ * --------------------
+ *
+ *  Traverse throuh a linkedlist and frees all allocated memory.
+ * 
+ *  rootNode:	Pointer to root-node of linkedlist to free.
+ */
+void linkedList_free(node *rootNode)
+{
 
   bool doneTraverse = false;
   node *currentNode = rootNode;
@@ -45,10 +60,17 @@ void linkedList_free(node *rootNode){
       currentNode = currentNode->next;
     }
   }
-
-
 }
 
+/*
+ * Function:  linkedList_append(node *rootNode, user_info *value)
+ * --------------------
+ *
+ *  Append user_info to end of linkedlist.
+ * 
+ *  rootNode:	  Pointer to root-node of linkedlist to free.
+ *  user_info:  Pointer to User_info struct to append to linkedlist.
+ */
 void linkedList_append(node *rootNode, user_info *value){
 
   node *lastNode = NULL;
@@ -73,6 +95,14 @@ void linkedList_append(node *rootNode, user_info *value){
 
 }
 
+/*
+ * Function:  linkedList_print(node *rootNode)
+ * --------------------
+ *
+ *  Prints content of linkedlist
+ * 
+ *  rootNode:	  Pointer to root-node of linkedlist to print.
+ */
 void linkedList_print(node *rootNode){
 
   node *currentNode = rootNode;
@@ -105,6 +135,15 @@ void linkedList_print(node *rootNode){
 
 }
 
+/*
+ * Function:  linkedList_print(node *rootNode)
+ * --------------------
+ *
+ *  Switch places of two nodes in the linkedlist
+ * 
+ *  a:	  Pointer to node to swtich with b
+ *  b:	  Pointer to node to swtich with a
+ */
 void linkedList_swapNodes(node *a, node *b)
 {
 
@@ -116,7 +155,14 @@ void linkedList_swapNodes(node *a, node *b)
 
 }
 
-
+/*
+ * Function:  linkedList_sort(node *start)
+ * --------------------
+ *
+ *  Sort linkedlist based on each values:s user_info->UID
+ * 
+ *  start:	  Pointer to root-node of linkedlist to print.
+ */
 void linkedList_sort(node *start)
 {
 
