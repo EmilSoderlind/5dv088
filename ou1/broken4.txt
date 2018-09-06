@@ -1,5 +1,5 @@
-mr:x:1171:1101:Mikael Rännar:/Home/staff/mr:/usr/local/bin/tcsh
-axelsson:x:12856:1101:Björn Axelsson:/Home/staff/axelsson:/usr/local/bin/tcsh
+mr:x:1001:1101:Mikael Rännar:/Home/staff/mr:/usr/local/bin/tcsh
+axelsson:x:1004:-1:Björn Axelsson:/Home/staff/axelsson:/usr/local/bin/tcsh
 gabriel:x:16928:1101:Gabriel Jonsson:/Home/staff/gabriel:/usr/local/bin/tcsh
 set:x:12037:1101:Set Norman:/Home/staff/set:/usr/local/bin/tcsh
 dahlin:x:12928:1101:Fredrik Dahlin:/Home/staff/dahlin:/usr/local/bin/tcsh

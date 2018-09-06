@@ -13,6 +13,8 @@ int main(int argc, char *argv[])
 
 	FILE *fp;
 
+	bool foundFaultyRow = false;
+
 	if (argc == 2) // OM vi har input-parameters ta hand om dom
 	{
 		// Om filen fuckar --> felmeddelande
@@ -83,45 +85,56 @@ int main(int argc, char *argv[])
 
 				// CHECK STUFF
 
-				if (strlen(username) == 0)
+				if (strlen(line) == 0)
 				{
-					printf("Line %d: The uname field cannot be empty.\n",lineNumber);
+					printf("Line %d: Encountered a <BLANKLINE>\n", lineNumber);
+					faulthy_row = true;
+					free(username);
+				}
+				else if (strlen(username) == 0)
+				{
+					printf("Line %d: Invalid format.\n", lineNumber);
 					faulthy_row = true;
 					free(username);
 				}
 				else if (strlen(password) == 0)
 				{
-					printf("Line %d: The password field cannot be empty.\n", lineNumber);
+					printf("Line %d: Invalid format.\n", lineNumber);
 					faulthy_row = true;
 					free(username);
 				}
 				else if (strlen(UID) == 0)
 				{
-					printf("Line %d: The UID field cannot be empty.\n", lineNumber);
+					printf("Line %d: Invalid format.\n", lineNumber);
 					faulthy_row = true;
 					free(username);
 				}
 				else if (strlen(GID) == 0)
 				{
-					printf("Line %d: The GID field cannot be empty.\n", lineNumber);
+					printf("Line %d: Invalid format.\n", lineNumber);
 					faulthy_row = true;
 					free(username);
 				}
 				else if (strlen(GECOS) == 0)
 				{
-					printf("Line %d: The GECOS field cannot be empty.\n", lineNumber);
+					printf("Line %d: Invalid format.\n", lineNumber);
 					faulthy_row = true;
 					free(username);
 				}
 				else if (strlen(directory) == 0)
 				{
-					printf("Line %d: The directory field cannot be empty.\n", lineNumber);
+					printf("Line %d: Invalid format.\n", lineNumber);
 					faulthy_row = true;
 					free(username);
 				}
 				else if (strlen(shell) == 0)
 				{
-					printf("Line %d: The shell field cannot be empty.\n", lineNumber);
+					printf("Line %d: Invalid format.\n", lineNumber);
+					faulthy_row = true;
+					free(username);
+				}else if(GID[0] == '-')
+				{
+					printf("Line %d: GID has to be a positive number. Got \"%s\" \n", lineNumber,GID);
 					faulthy_row = true;
 					free(username);
 				}
@@ -135,7 +148,16 @@ int main(int argc, char *argv[])
 					newValue->uid = strtol(UID,&ptr,10);
 					newValue->uname = username;
 
-					linkedList_append(list, newValue);
+
+					if(strlen(ptr) == 0){
+						linkedList_append(list, newValue);
+					}else{
+
+						printf("Line %d: UID has to be a number. Got: \"%s\n", lineNumber,UID);
+						faulthy_row = true;
+						free(username);
+						free(newValue);
+					}
 
 				}
 
@@ -145,25 +167,34 @@ int main(int argc, char *argv[])
 				free(GECOS);
 				free(directory);
 				free(shell);
-				
+
+				if (!foundFaultyRow && faulthy_row)
+				{
+					foundFaultyRow = true;
+				}
 			}
 			else
 			{
 				reachedEOF = true;
 			}
 			lineNumber++;
+
 		}
 
 		free(line);
 	}
 	fclose(fp);
 
-	linkedList_print(list);
-	printf("-- SORTING --\n");
 	linkedList_sort(list);
+	
 	linkedList_print(list);
-
 
 	linkedList_free(list);
-	return 0;
+
+
+	if(foundFaultyRow){
+		return EXIT_FAILURE;
+	}else{
+		return EXIT_SUCCESS;
+	}
 }
