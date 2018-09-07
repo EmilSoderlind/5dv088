@@ -1,4 +1,4 @@
-#include "list.c"
+#include "list.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,7 +9,7 @@
 /*
  * Function:  main 
  * --------------------
- * 
+ * s
  * The program takes a textfile of user-accounts, 
  * append their repectivly UID:s and usernames to a linked list. 
  * The program sorts the list and prints the accounts. 
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 {
 
 	node *list = linkedList_create();
-	FILE *fp;
+	FILE *fp = NULL;
 
 	bool foundFaultyRow = false;
 
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 				bool faulthy_row = false;
 
 				int countingSemiColons = 0;
-				for (int i = 0; i < strlen(line); i++) // Replace ":" with " "
+				for (unsigned int i = 0; i < strlen(line); i++) // Replace ":" with " "
 				{
 					if (line[i] == ':')
 					{
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
 				int directoryLength = 0;
 				int shellLength = 0;
 
-				for(int j = 0; j<strlen(line); j++){
+				for(unsigned int j = 0; j<strlen(line); j++){
 
 					if(line[j] == ':'){
 						workingOnFieldNr++;
