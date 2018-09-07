@@ -12,7 +12,7 @@
  * 
  *  returns:	Pointer to root-node of linkedlist
  */
-node *linkedList_create(){
+node *linkedList_create(void){
 
   node *rootNode = malloc(sizeof(node));
 
