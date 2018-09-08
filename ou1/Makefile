@@ -15,6 +15,12 @@ list.o: list.c list.h
 
 valgrind: mpasswdsort
 	valgrind --leak-check=yes --show-reachable=yes ./mpasswdsort < kortfil.txt
+	valgrind --leak-check=yes --show-reachable=yes ./mpasswdsort < broken.txt
+	valgrind --leak-check=yes --show-reachable=yes ./mpasswdsort < broken2.txt
+	valgrind --leak-check=yes --show-reachable=yes ./mpasswdsort < broken3.txt
+	valgrind --leak-check=yes --show-reachable=yes ./mpasswdsort < broken4.txt
+	valgrind --leak-check=yes --show-reachable=yes ./mpasswdsort < broken5.txt
+	valgrind --leak-check=yes --show-reachable=yes ./mpasswdsort < /etc/passwd
 
 clean:
 	rm -rf *.o *.out mpasswdsort
