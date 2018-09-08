@@ -13,5 +13,8 @@ mpasswdsort.o: mpasswdsort.c list.h
 list.o: list.c list.h
 	$(CC) $(CFLAGS) -c list.c
 
+valgrind: mpasswdsort
+	valgrind --leak-check=yes --show-reachable=yes ./mpasswdsort < kortfil.txt
+
 clean:
 	rm -rf *.o *.out mpasswdsort
