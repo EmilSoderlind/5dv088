@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
 							shellLength++;
 							break;
 						default:
-							printf("Line %d: Encountered too many semicolons. Invalid format.\n", lineNumber);
+							fprintf(stderr, "Line %d: Encountered too many semicolons. Invalid format.\n", lineNumber);
 							faulthy_row = true;
 							free(username);
 						}
@@ -171,60 +171,73 @@ int main(int argc, char *argv[])
 
 				// CHECK STUFF
 
+				char *checkGIDNumeric;
+				strtol(GID, &checkGIDNumeric, 10);
+
 				if (strlen(line) == 0)
 				{
-					printf("Line %d: Encountered a <BLANKLINE>\n", lineNumber);
+					fprintf(stderr, "Line %d: Encountered a <BLANKLINE>\n", lineNumber);
+					faulthy_row = true;
+					free(username);
+				}
+				else if (strlen(checkGIDNumeric) != 0)
+				{
+					fprintf(stderr, "Line %d: The 'gid' field has to be numeric: %s\n", lineNumber,line);
 					faulthy_row = true;
 					free(username);
 				}
 				else if(countingSemiColons != 6)
 				{
-					printf("Line %d: Found %d semicolons, 6 is required. Invalid format.\n", lineNumber,countingSemiColons);
+					fprintf(stderr, "Line %d: Found %d semicolons, 6 is required. Invalid format.\n", lineNumber, countingSemiColons);
 					faulthy_row = true;
 					free(username);
 				}
 				else if (strlen(username) == 0 || strlen(username) > 32)
 				{
-					printf("Line %d: Username is invalid. Must be 1-32 charachers.\n", lineNumber);
+					fprintf(stderr, "Line %d: Username is invalid. Must be 1-32 charachers.\n", lineNumber);
 					faulthy_row = true;
 					free(username);
 				}
 				else if (strlen(UID) == 0)
 				{
-					printf("Line %d: Missing UID, invalid format.\n", lineNumber);
+					fprintf(stderr, "Line %d: Missing UID, invalid format.\n", lineNumber);
 					faulthy_row = true;
 					free(username);
 				}
 				else if (strlen(GID) == 0)
 				{
-					printf("Line %d: Missing GID, invalid format.\n", lineNumber);
+					fprintf(stderr, "Line %d: Missing GID, invalid format.\n", lineNumber);
 					faulthy_row = true;
 					free(username);
 				}
 				else if (strlen(directory) == 0)
 				{
-					printf("Line %d: Missing directory, invalid format.\n", lineNumber);
+					fprintf(stderr, "Line %d: Missing directory, invalid format.\n", lineNumber);
 					faulthy_row = true;
 					free(username);
 				}
 				else if (strlen(shell) == 0)
 				{
-					printf("Line %d: Missing shell, invalid format.\n", lineNumber);
+					fprintf(stderr, "Line %d: Missing shell, invalid format.\n", lineNumber);
 					faulthy_row = true;
 					free(username);
 				}
 				else if(GID[0] == '-')
 				{
-					printf("Line %d: GID has to be a positive number. Got \"%s\" \n", lineNumber,GID);
+					fprintf(stderr, "Line %d: GID has to be a positive number. Got \"%s\" \n", lineNumber, GID);
 					faulthy_row = true;
 					free(username);
 				}
 				else if (UID[0] == '-')
 				{
-					printf("Line %d: UID has to be a positive number. Got \"%s\" \n", lineNumber, UID);
+					fprintf(stderr, "Line %d: UID has to be a positive number. Got \"%s\" \n", lineNumber, UID);
 					faulthy_row = true;
 					free(username);
 				}
+
+
+
+
 
 				if(!faulthy_row){ // Append to list if the row is legit
 
@@ -240,7 +253,7 @@ int main(int argc, char *argv[])
 						linkedList_append(list, newValue);
 					}else{
 
-						printf("Line %d: UID has to be a number. Got: \"%s\n", lineNumber,UID);
+						fprintf(stderr, "Line %d: UID has to be a number. Got: \"%s\n", lineNumber, UID);
 						faulthy_row = true;
 						free(username);
 						free(newValue);
@@ -283,4 +296,3 @@ int main(int argc, char *argv[])
 		return EXIT_SUCCESS;
 	}
 }
-
