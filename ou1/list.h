@@ -16,7 +16,7 @@ void linkedList_free(node *rootNode);
 
 void linkedList_append(node *rootNode, void *value);
 
-void linkedList_addUserInfo(node *rootNode, user_info *value);
+void linkedList_addUserInfo(node *root, user_info *UIvalue);
 
 void linkedList_print(node *rootNode);
 
