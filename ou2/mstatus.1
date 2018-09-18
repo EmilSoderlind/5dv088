@@ -1,0 +1,16 @@
+.TH MSTATUS 1
+.SH NAME
+mstatus \- update .plan file
+.SH SYNOPSIS
+
+.B mstatus
+{\fIlogin\fR|\fIlogout\fR|\fIxlock\fR|\fIunxlock\fR}
+[\fBmessage\fR]
+.SH DESCRIPTION
+.B mstatus
+modifies .plan file with status and optional message. Message is optional and status is obligatory. If .plan file dosen't exist the program creates it. If number of parameters is 0 or greater than 2 the program terminates.
+.SH AUTHOR
+Emil Soderlind (id15esd)
+.SH OPTIONS
+Status is obligatoruy and can be \fIlogin\fR|\fIlogout\fR|\fIxlock\fR|\fIunxlock\fR. A optional \fBmessage\fR can also be added. 
+
