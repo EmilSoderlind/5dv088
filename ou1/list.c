@@ -99,7 +99,7 @@ void linkedList_append(node *rootNode, void *value)
   lastNode->next = value;
 }
 /*
- * Function:  linkedList_appendUserInfo(node *rootNode, user_info *value)
+ * Function:  linkedList_addUserInfo(node *rootNode, user_info *value)
  * --------------------
  *
  *  Append user_info to end of linkedlist.
@@ -107,7 +107,7 @@ void linkedList_append(node *rootNode, void *value)
  *  rootNode:	  Pointer to root-node of linkedlist to free.
  *  user_info:  Pointer to User_info struct to append to linkedlist.
  */
-void linkedList_appendUserInfo(node *rootNode, user_info *value)
+void linkedList_addUserInfo(node *rootNode, user_info *value)
 {
 
   node *lastNode = NULL;

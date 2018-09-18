@@ -35,11 +35,10 @@ static void appendToList(char *UID, bool *faulthy_row, int lineNumber, node *lis
 
 	if (strlen(ptr) == 0)
 	{
-		linkedList_appendUserInfo(list, newValue);
+		linkedList_addUserInfo(list, newValue);
 	}
 	else
 	{
-
 		fprintf(stderr, "Line %d: UID has to be a number. Got: \"%s\n", lineNumber, UID);
 		*faulthy_row = true;
 		free(username);
