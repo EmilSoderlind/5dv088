@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# Check number of parameters
+if [ $# -lt 1 ] || [ $# -gt 2 ]; then
+    echo "ERROR: Must be 1-2 input parameters\n"
+    exit 1
+fi
+
+# Create .plan if it dosen't exist
+if [ -e ".plan" ]; then
+    x=5
+else 
+    touch .plan
+fi 
+
+
+date=`date '+%y-%m-%d %H:%M:%S':`
+
+
+if [ $# == 1 ]; then
+    # Without message
+    case $1 in
+        "login")
+            message=" logged in on `uname`"
+            ;;
+        "logout")
+            message=" logged out from `uname`"
+            ;;
+        "xlock")
+            message=" xlocked `uname`"
+            ;; 
+        "unxlock")
+            message=" un-xlocked `uname`"
+            ;;
+        *)
+            echo "ERROR: Faulty parameter $1"
+            exit 1
+            ;;
+    esac
+else
+    # With message
+    case $1 in
+        "login")
+            message=" logged in on `uname` with message \"$2\""
+            ;;
+        "logout")
+            message=" logged out from `uname` with message \"$2\""
+            ;;
+        "xlock")
+            message=" xlocked `uname` with message \"$2\""
+            ;; 
+        "unxlock")
+            message=" un-xlocked `uname` with message \"$2\""
+            ;;
+        *)
+            echo "ERROR: Faulty parameter $1"
+            exit 1
+            ;;
+    esac
+fi
+
+lines=`wc -l < .plan`
+
+newEntry=$date$message
+
+if [ $lines == 0 ]; then
+    echo -e "$newEntry" > .plan
+else
+    echo -e "$(cat .plan)\n$newEntry" > .plan
+fi
+
+# More than five lines, keep top five
+if [ $lines -ge 5 ]; then
+    echo "$(tail -n 5 .plan)" > .plan
+fi
