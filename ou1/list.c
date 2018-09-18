@@ -15,6 +15,10 @@
 node *linkedList_create(void){
 
   node *rootNode = malloc(sizeof(node));
+  if(rootNode == NULL){
+    fprintf(stderr, "ERROR: Unable to allocate memory\n");
+    exit(EXIT_FAILURE);
+  }
 
   rootNode->prev = NULL;
   rootNode->next = NULL;
@@ -63,7 +67,39 @@ void linkedList_free(node *rootNode)
 }
 
 /*
- * Function:  linkedList_append(node *rootNode, user_info *value)
+ * Function:  linkedList_append(node *rootNode, void *value)
+ * --------------------
+ *
+ *  Append value (void*) to end of linkedlist.
+ * 
+ *  rootNode:	  Pointer to root-node of linkedlist to free.
+ *  void*:  Pointer to value to append to linkedlist.
+ */
+void linkedList_append(node *rootNode, void *value)
+{
+
+  node *lastNode = NULL;
+  node *currentNode = rootNode;
+  bool foundLastNode = false;
+
+  while (!foundLastNode)
+  {
+
+    if (currentNode->next == NULL)
+    { // Reached last node
+      foundLastNode = true;
+      lastNode = currentNode;
+    }
+    else
+    {
+      currentNode = currentNode->next;
+    }
+  }
+
+  lastNode->next = value;
+}
+/*
+ * Function:  linkedList_appendUserInfo(node *rootNode, user_info *value)
  * --------------------
  *
  *  Append user_info to end of linkedlist.
@@ -71,31 +107,39 @@ void linkedList_free(node *rootNode)
  *  rootNode:	  Pointer to root-node of linkedlist to free.
  *  user_info:  Pointer to User_info struct to append to linkedlist.
  */
-void linkedList_append(node *rootNode, user_info *value){
+void linkedList_appendUserInfo(node *rootNode, user_info *value)
+{
 
   node *lastNode = NULL;
   node *currentNode = rootNode;
   bool foundLastNode = false;
 
-  while(!foundLastNode){
+  while (!foundLastNode)
+  {
 
-    if(currentNode->next == NULL){ // Reached last node
+    if (currentNode->next == NULL)
+    { // Reached last node
       foundLastNode = true;
       lastNode = currentNode;
-    }else{
+    }
+    else
+    {
       currentNode = currentNode->next;
     }
-
   }
 
   lastNode->next = malloc(sizeof(node));
-  ((node*)(lastNode->next))->prev = lastNode; // New node points to previos
-  ((node*)(lastNode->next))->value = value; // New node points to its value
-  ((node*)(lastNode->next))->next = NULL; // New node next-pointer is NULL
+  if(lastNode->next == NULL){
+    fprintf(stderr, "ERROR: Unable to allocate memory\n");
+    exit(EXIT_FAILURE);
+  }
 
-}
+  ((node *)(lastNode->next))->prev = lastNode; // New node points to previos
+  ((node *)(lastNode->next))->value = value;   // New node points to its value
+  ((node *)(lastNode->next))->next = NULL;     // New node next-pointer is NULL
+  }
 
-/*
+  /*
  * Function:  linkedList_print(node *rootNode)
  * --------------------
  *
@@ -103,39 +147,36 @@ void linkedList_append(node *rootNode, user_info *value){
  * 
  *  rootNode:	  Pointer to root-node of linkedlist to print.
  */
-void linkedList_print(node *rootNode){
+  void linkedList_print(node * rootNode)
+  {
 
-  node *currentNode = rootNode;
-  bool foundLastNode = false;
-  int index = 0;
+    node *currentNode = rootNode;
+    bool foundLastNode = false;
+    int index = 0;
 
-  while(!foundLastNode){
+    while (!foundLastNode)
+    {
 
-    user_info *currentValue = currentNode->value;
+      user_info *currentValue = currentNode->value;
 
-    if(currentValue != NULL){ // If not root node
-      printf("%d:%s\n", currentValue->uid, currentValue->uname);
-    }else{
-      /*
-      printf("%d\n", index);
-      printf("uid: root\n");
-      printf("uname: root\n");
-      printf("--\n");
-      */
+      if (currentValue != NULL)
+      { // If not root node
+        printf("%d:%s\n", currentValue->uid, currentValue->uname);
+      }
+
+      if (currentNode->next == NULL)
+      {
+        foundLastNode = true;
+      }
+      else
+      {
+        currentNode = currentNode->next;
+        index = index + 1;
+      }
     }
-
-    if(currentNode->next == NULL){
-      foundLastNode = true;
-    }else{
-      currentNode = currentNode->next;
-      index = index + 1;
-    }
-
   }
 
-}
-
-/*
+  /*
  * Function:  linkedList_print(node *rootNode)
  * --------------------
  *
@@ -144,18 +185,17 @@ void linkedList_print(node *rootNode){
  *  a:	  Pointer to node to swtich with b
  *  b:	  Pointer to node to swtich with a
  */
-void linkedList_swapNodes(node *a, node *b)
-{
+  void linkedList_swapNodes(node * a, node * b)
+  {
 
-  user_info* tempA_UI = a->value;
-  user_info* tempB_UI = b->value;
+    user_info *tempA_UI = a->value;
+    user_info *tempB_UI = b->value;
 
-  a->value = tempB_UI;
-  b->value = tempA_UI;
+    a->value = tempB_UI;
+    b->value = tempA_UI;
+  }
 
-}
-
-/*
+  /*
  * Function:  linkedList_sort(node *start)
  * --------------------
  *
@@ -163,38 +203,37 @@ void linkedList_swapNodes(node *a, node *b)
  * 
  *  start:	  Pointer to root-node of linkedlist to print.
  */
-void linkedList_sort(node *start)
-{
-
-  bool swapped = true;
-
-  node *node1 = start->next;
-
-  if (start->next == NULL) // Empty list
-  {
-    fprintf(stderr, "ERROR: Empty file\n");
-    exit(1);
-  }
-
-  do
+  void linkedList_sort(node * start)
   {
 
-    swapped = false;
-    node1 = start->next;
+    bool swapped = true;
 
-    while (node1->next != NULL)
+    node *node1 = start->next;
+
+    if (start->next == NULL) // Empty list
+    {
+      return;
+    }
+
+    do
     {
 
-      unsigned int uid1 = (unsigned int)(((user_info*)(node1->value))->uid);
-      user_info *nextUI = ((user_info *)(node1->next)->value);
-      unsigned int uid2 = (unsigned int)(nextUI->uid);
-      
-      if(uid1 > uid2)
+      swapped = false;
+      node1 = start->next;
+
+      while (node1->next != NULL)
       {
-        linkedList_swapNodes(node1,node1->next);
-        swapped = true;
+
+        unsigned int uid1 = (unsigned int)(((user_info *)(node1->value))->uid);
+        user_info *nextUI = ((user_info *)(node1->next)->value);
+        unsigned int uid2 = (unsigned int)(nextUI->uid);
+
+        if (uid1 > uid2)
+        {
+          linkedList_swapNodes(node1, node1->next);
+          swapped = true;
+        }
+        node1 = node1->next;
       }
-      node1 = node1->next;
-    }
-  } while (swapped);
-}
+    } while (swapped);
+  }
