@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <fcntl.h>  // for open
+#include <unistd.h> // for close
 
 #include "execute.h"
 
@@ -9,9 +11,10 @@
  *		destfd	the standard I/O file descriptor to be replaced
  * Returns:	-1 on error, else destfd
  */
+
 int dupPipe(int pip[2], int end, int destfd){
 
-    if(close(destfd)) == -1){
+    if(close(destfd) == -1){
         return -1;
     }
 
@@ -39,24 +42,31 @@ int dupPipe(int pip[2], int end, int destfd){
  */
 int redirect(char *filename, int flags, int destfd){
 
-    FILE fd;
+    int fileDesc;
+
+    // IF WRITE
+    if(flags ){ 
+
+        if ((fileDesc = open(filename, flags)) == -1){
+            fprintf(stdout, "Could not open file\n"); // "Hello world" on stdout (using fprintf)
+            return -1; // Error opening file
+        }
+
+        if(close(destfd) == -1){
+            fprintf(stdout, "Could not close fileDescriptor %d\n", destfd); // "Hello world" on stdout (using fprintf)
+            return -1;
+        }
+
+        int shouldBeDestfd = dup(fileDesc);
+
+        if(shouldBeDestfd != destfd){
+            fprintf(stdout, "Could not dup-fileDescriptor %d\n", destfd); // "Hello world" on stdout (using fprintf)
+
+            return -1;
+        }
+
+    }
     
-
-    if (fd = open(filename, flags) == -1){
-        return -1; // Error opening file
-    }
-
-    if(close(destfd) == -1){
-        return -1;
-    }
-
-    int shouldBeDestfd = dup(fd);
-
-
-    if(shouldBeDestfd != destfd){
-        return -1;
-    }
-
     return destfd;
 }
 
