@@ -70,10 +70,10 @@ void linkedList_free(node *rootNode)
  * Function:  linkedList_append(node *rootNode, void *value)
  * --------------------
  *
- *  Append value (void*) to end of linkedlist.
+ *  Append value to end of linkedlist.
  * 
  *  rootNode:	  Pointer to root-node of linkedlist to free.
- *  void*:  Pointer to value to append to linkedlist.
+ *  value:  Pointer to void *value  to append to linkedlist.
  */
 void linkedList_append(node *rootNode, void *value)
 {
@@ -96,39 +96,8 @@ void linkedList_append(node *rootNode, void *value)
     }
   }
 
-  lastNode->next = value;
-}
-/*
- * Function:  linkedList_addUserInfo(node *rootNode, user_info *value)
- * --------------------
- *
- *  Append user_info to end of linkedlist.
- * 
- *  rootNode:	  Pointer to root-node of linkedlist to free.
- *  user_info:  Pointer to User_info struct to append to linkedlist.
- */
-void linkedList_addUserInfo(node *rootNode, user_info *value)
-{
-
-  node *lastNode = NULL;
-  node *currentNode = rootNode;
-  bool foundLastNode = false;
-
-  while (!foundLastNode)
-  {
-
-    if (currentNode->next == NULL)
-    { // Reached last node
-      foundLastNode = true;
-      lastNode = currentNode;
-    }
-    else
-    {
-      currentNode = currentNode->next;
-    }
-  }
-
   lastNode->next = malloc(sizeof(node));
+  
   if(lastNode->next == NULL){
     fprintf(stderr, "ERROR: Unable to allocate memory\n");
     exit(EXIT_FAILURE);

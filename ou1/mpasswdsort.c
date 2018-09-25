@@ -35,7 +35,7 @@ static void appendToList(char *UID, bool *faulthy_row, int lineNumber, node *lis
 
 	if (strlen(ptr) == 0)
 	{
-		linkedList_addUserInfo(list, newValue);
+		linkedList_append(list, newValue);
 	}
 	else
 	{
