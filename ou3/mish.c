@@ -83,11 +83,10 @@ int prompt(command commandArr[], int* NrOfCommands){
 
     *NrOfCommands = parse(promptLine, commandArr);
 
-
     return 0;
 }
 
-int runCommand(command com, int pipeIndex, int nrOfCommands, int pipeArray[][2]){
+int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][2]){
 
 
     //print_command(com);
@@ -104,13 +103,49 @@ int runCommand(command com, int pipeIndex, int nrOfCommands, int pipeArray[][2])
     if (tempPID != 0){ // Parent <- Save childrens PID
         PID_CHILDREN_ARRAY[NR_OF_CHILDREN] = tempPID;
         NR_OF_CHILDREN++;
+
     }else{ // Children <- Set childrens PROCESS_PID
         PROCESS_PID = tempPID;
     }
 
     if(PROCESS_PID == 0){ // CHILD
 
-        printf("Child!\n");
+        printf("Command: %d/%d\n", commandIndex, nrOfCommands);
+        
+        
+        // Kasta runt pipor!
+
+        if(nrOfCommands == 1){ // Only 1 command
+
+            printf("Only 1 command!\n");
+
+
+
+
+
+        }else if(commandIndex == 0){ // First command in chain
+            printf("First in chain!\n");
+
+
+
+
+        }else if((commandIndex+1) == nrOfCommands){ // Last command in chain
+            printf("Last in chain!\n");
+
+
+
+        }else{ // Ordinary commands in chain
+
+
+
+            printf("In chain!\n");
+
+        }
+
+
+        // Skriv ut till fil osv redirect
+
+        // Excecv!
 
     }
 
@@ -144,21 +179,23 @@ int main(int argc, char *argv[]) {
 
         // BUILD INT ARRAY ARRAY
         int pipeArray[NrOfCommands-1][2];
-        int pipeIndex = 0;
+        int commandIndex = 0;
 
         for (int i = 0; i < (NrOfCommands - 1); i++){ // Create pipes, fill pipeArray
             pipe(pipeArray[i]);
         }
 
         for(int i = 0; i<NrOfCommands; i++){
-            runCommand(comLine[i],pipeIndex,NrOfCommands,pipeArray);
+            runCommand(comLine[i],commandIndex,NrOfCommands,pipeArray);
 
             // REMOVE LATER JUST DEBUG. Children forks.. -.-
-            if(PROCESS_PID == 0){
+            if (PROCESS_PID == 0){
                 break;
             }
-        }
 
+            commandIndex++; // Keep track of which command in line to tell child, that is relevant for them
+
+        }
     }
 
     if(PROCESS_PID != 0){ // PARENT WAIT
@@ -166,17 +203,18 @@ int main(int argc, char *argv[]) {
         for(int i = 0; i<NR_OF_CHILDREN; i++){
             int status;
             waitpid(PID_CHILDREN_ARRAY[i], &status, 0);
-            printf("Parent signing off. Child exited with status %d \n", status);
-            printf("WEXITSTATUS: %d\n", WEXITSTATUS(status));
-            printf("WIFEXITED: %d\n", WIFEXITED(status));
-            printf("WIFSIGNALED: %d\n", WIFSIGNALED(status));
-            printf("WIFSTOPPED: %d\n", WIFSTOPPED(status));
-            printf("--");
+            printf("Parent says: Child exited with status %d \n", status);
+            //printf("WEXITSTATUS: %d\n", WEXITSTATUS(status));
+            //printf("WIFEXITED: %d\n", WIFEXITED(status));
+            //printf("WIFSIGNALED: %d\n", WIFSIGNALED(status));
+            //printf("WIFSTOPPED: %d\n", WIFSTOPPED(status));
+            printf("--\n");
         }
     
     }else{
         // REMOVE LATER JUST DEBUG
         printf("PID(%d) flies away!\n",PROCESS_PID);
+        printf("--\n");
     }
 
 
