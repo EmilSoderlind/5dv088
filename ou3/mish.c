@@ -3,7 +3,7 @@
 
 static unsigned int NR_OF_CHILDREN = 0;
 static int PID_CHILDREN_ARRAY[MAXCOMMANDS];
-
+static int PROCESS_PID = 1337;
 
 
 int internal_echo(int argc, char *argv[]){
@@ -89,16 +89,31 @@ int prompt(command commandArr[], int* NrOfCommands){
 
 int runCommand(command com, int pipeIndex, int nrOfCommands, int pipeArray[][2]){
 
-    // Internt kommando, kör själv
 
+    //print_command(com);
 
-    print_command(com);
+    int tempPID; // For saving down in parent
 
+    // Fork
+    if ((tempPID = fork()) < 0){
+        // ERROR
+        printf("Error forking!");
+        return 1;
+    }
 
+    if (tempPID != 0){ // Parent <- Save childrens PID
+        PID_CHILDREN_ARRAY[NR_OF_CHILDREN] = tempPID;
+        NR_OF_CHILDREN++;
+    }else{ // Children <- Set childrens PROCESS_PID
+        PROCESS_PID = tempPID;
+    }
 
-    // Externt kommand:
-    // Forka barn + Koppla ihop barn + smara barn PID
-    
+    if(PROCESS_PID == 0){ // CHILD
+
+        printf("Child!\n");
+
+    }
+
     return 0;
 }
 
@@ -106,6 +121,9 @@ int main(int argc, char *argv[]) {
 
     command comLine[MAX_COMMANDS + 1];
     int NrOfCommands = 0;
+
+    // Get parents pid
+    PROCESS_PID = getpid();
 
     // Promt prompt, wait for input, parse input and fill CommandLine[] + NrOfCommands
     if(prompt(comLine, &NrOfCommands) != 0){
@@ -134,10 +152,34 @@ int main(int argc, char *argv[]) {
 
         for(int i = 0; i<NrOfCommands; i++){
             runCommand(comLine[i],pipeIndex,NrOfCommands,pipeArray);
+
+            // REMOVE LATER JUST DEBUG. Children forks.. -.-
+            if(PROCESS_PID == 0){
+                break;
+            }
         }
 
     }
 
+    if(PROCESS_PID != 0){ // PARENT WAIT
+
+        for(int i = 0; i<NR_OF_CHILDREN; i++){
+            int status;
+            waitpid(PID_CHILDREN_ARRAY[i], &status, 0);
+            printf("Parent signing off. Child exited with status %d \n", status);
+            printf("WEXITSTATUS: %d\n", WEXITSTATUS(status));
+            printf("WIFEXITED: %d\n", WIFEXITED(status));
+            printf("WIFSIGNALED: %d\n", WIFSIGNALED(status));
+            printf("WIFSTOPPED: %d\n", WIFSTOPPED(status));
+            printf("--");
+        }
     
+    }else{
+        // REMOVE LATER JUST DEBUG
+        printf("PID(%d) flies away!\n",PROCESS_PID);
+    }
+
+
+
     return 0;
 }
