@@ -18,6 +18,6 @@ int internal_cd(int argc, char *argv[]);
 
 int prompt(command commandArr[], int *NrOfCommands);
 
-int runCommand(command comLine[], int pipeIndex, int nrOfCommands);
+int runCommand(command com, int pipeIndex, int nrOfCommands, int pipeArray[][2]);
 
 int main(int argc, char *argv[]);

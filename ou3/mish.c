@@ -1,20 +1,40 @@
 
 #include "mish.h"
 
+static unsigned int NR_OF_CHILDREN = 0;
+static int PID_CHILDREN_ARRAY[MAXCOMMANDS];
+
 
 
 int internal_echo(int argc, char *argv[]){
 
-    
+    for (int i = 1; i<argc; i++){
+        if(argc <= 2){
+            printf("%s", argv[i]);
+        }else{
+            printf("%s ", argv[i]);
+        }
+    }
+
+    fflush(stdout);
+    fputs("\n", stderr);
 
     return 0;
 }
 
 int internal_cd(int argc, char *argv[]){
 
+    char *dir = argv[1] == NULL ? getenv("HOME") : argv[1];
 
+    char *directory = "";
 
-    if (chdir(argv[1]) != 0){
+    if (argv[1] == NULL){
+        directory = getenv("HOME");
+    }else{
+        directory = argv[1];
+    }
+
+    if (chdir(directory) != 0){
         fprintf(stderr, "ERROR: cd | Could not change directory");
         return 1;
     }
@@ -53,10 +73,12 @@ int prompt(command commandArr[], int* NrOfCommands){
 
     char promptLine[MAXWORDS];
 
-    if (fgets(promptLine, MAXWORDS, stdin) != NULL)
+    if (fgets(promptLine, MAXWORDS, stdin) == NULL)
     {
         // ERROR
+        printf("ERROR! ");
         puts(promptLine);
+        return 1;
     }
 
     *NrOfCommands = parse(promptLine, commandArr);
@@ -65,16 +87,18 @@ int prompt(command commandArr[], int* NrOfCommands){
     return 0;
 }
 
-int runCommand(command comLine[], int pipeIndex, int nrOfCommands){
+int runCommand(command com, int pipeIndex, int nrOfCommands, int pipeArray[][2]){
 
-    // Internt kommando, kör själv    
+    // Internt kommando, kör själv
+
+
+    print_command(com);
 
 
 
     // Externt kommand:
     // Forka barn + Koppla ihop barn + smara barn PID
-
-
+    
     return 0;
 }
 
@@ -83,11 +107,11 @@ int main(int argc, char *argv[]) {
     command comLine[MAX_COMMANDS + 1];
     int NrOfCommands = 0;
 
+    // Promt prompt, wait for input, parse input and fill CommandLine[] + NrOfCommands
     if(prompt(comLine, &NrOfCommands) != 0){
         // ERROR
         printf("Error in prompt!\n");
     }
-    
 
     // Internal commands
     if (STRCMP(comLine[0].argv[0], ==, "echo") || STRCMP(comLine[0].argv[0], ==, "cd")){
@@ -95,23 +119,25 @@ int main(int argc, char *argv[]) {
         if (STRCMP(comLine[0].argv[0], ==, "cd")){
             internal_cd(comLine[0].argc,comLine[0].argv);
         }
-        if (STRCMP(comLine[0].argv[0], ==, "cd")){
+        if (STRCMP(comLine[0].argv[0], ==, "echo")){
             internal_echo(comLine[0].argc, comLine[0].argv);
         }
     }else{ // External commands
 
-        
+        // BUILD INT ARRAY ARRAY
+        int pipeArray[NrOfCommands-1][2];
+        int pipeIndex = 0;
 
-        for(int i = 0; i<(NrOfCommands*55-1); i++){
-            int pipes[2];
-            pipe(pipes);
-            printf("Skapa pipe #%d!---R-%d|---W-%d-|--\n", i, pipes[0], pipes[1]);
+        for (int i = 0; i < (NrOfCommands - 1); i++){ // Create pipes, fill pipeArray
+            pipe(pipeArray[i]);
         }
 
-
-
+        for(int i = 0; i<NrOfCommands; i++){
+            runCommand(comLine[i],pipeIndex,NrOfCommands,pipeArray);
+        }
 
     }
 
+    
     return 0;
 }
