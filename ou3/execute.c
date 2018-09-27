@@ -12,20 +12,24 @@
  * Returns:	-1 on error, else destfd
  */
 
-int dupPipe(int pip[2], int end, int destfd){
 
-    printf("%d:%d --r/w:%d--> %d\n",pip[0],pip[1],end,destfd);
+// REMOVE COMMAND-input LATER
 
+int dupPipe(int pip[2], int end, int destfd, command com){
+
+    fprintf(stderr, "%s closing %d\n", com.argv[0], destfd);
     if (close(destfd) == -1){
         return -1;
     }
 
+    fprintf(stderr, "%s dup %d\n", com.argv[0], pip[end]);
     int duplicatedFileDesc = dup(pip[end]);
 
     if(duplicatedFileDesc == -1){
         return duplicatedFileDesc;
     }
 
+    fprintf(stderr, "%s closing %d\n", com.argv[0], pip[end]);
     if(close(pip[end]) == -1){
         return -1;
     }
@@ -46,7 +50,7 @@ int redirect(char *filename, int flags, int destfd){
 
     // TO BE WRITTEN
 
-
     return destfd;
+
 }
 

@@ -32,6 +32,7 @@
 #define WRITE_END 1
 #endif
 
+#include "parser.h"
 
 /* Duplicate a pipe to a standard I/O file descriptor
  * Arguments:	pip	the pipe
@@ -40,7 +41,7 @@
  *		destfd	the standard I/O file descriptor to be replaced
  * Returns:	-1 on error, else destfd
  */
-int dupPipe(int pip[2], int end, int destfd);
+int dupPipe(int pip[2], int end, int destfd, command com);
 
 
 /* Redirect a standard I/O file descriptor to a file

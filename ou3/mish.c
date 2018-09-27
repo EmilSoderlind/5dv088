@@ -86,7 +86,7 @@ int prompt(command commandArr[], int* NrOfCommands){
     *NrOfCommands = parse(promptLine, commandArr);
 
     for(int k = 0; k<*NrOfCommands;k++){
-        print_command(commandArr[k]);
+        //print_command(commandArr[k]);
     }
 
     return 0;
@@ -94,12 +94,9 @@ int prompt(command commandArr[], int* NrOfCommands){
 
 int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][2]){
 
-    printf("in runCommand\n");
-    print_command(com);
+    //print_command(com);
 
     int tempPID; // For saving down in parent
-
-    printf("Fork!\n");
 
     // Fork
     if ((tempPID = fork()) < 0){
@@ -111,55 +108,93 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
     if (tempPID != 0){ // Parent <- Save childrens PID
         PID_CHILDREN_ARRAY[NR_OF_CHILDREN] = tempPID;
         NR_OF_CHILDREN++;
-        printf("->NR_OF_CHILDREN: %d\n", NR_OF_CHILDREN);
+        printf("Fork->NR_OF_CHILDREN: %d\n", NR_OF_CHILDREN);
     }else{ // Children <- Set childrens PROCESS_PID
         PROCESS_PID = tempPID;
     }
 
     if(PROCESS_PID == 0){ // CHILD
 
-        printf("Command: %d/%d\n", commandIndex, nrOfCommands);
-        printf("com.argv[0]-> (%s)\n", com.argv[0]);
+        //printf("Command: %d/%d\n", commandIndex, nrOfCommands);
+        printf("com-> (%s)\n", com.argv[0]);
 
         // Kasta runt pipor!
 
         if(nrOfCommands == 1){ // Only 1 command
-
             printf("Only 1 command!\n");
-            
-
         }else if(commandIndex == 0){ // First command in chain
             printf("First in chain!\n");
 
-            dupPipe(pipeArray[0],WRITE_END,STDOUT_FILENO);
-            printf("First through pipe!!\n");
+            dupPipe(pipeArray[0],WRITE_END,STDOUT_FILENO,com);
+            close(pipeArray[0][READ_END]);
+            fprintf(stderr, "%s closing %d\n", com.argv[0], pipeArray[0][READ_END]);
 
+            for (int i = 1; i < (nrOfCommands - 1); i++) // Close unused pipes
+            {
+                fprintf(stderr, "%s closing pipe:%d:%d\n", com.argv[0], pipeArray[i][READ_END], pipeArray[i][WRITE_END]);
+
+                close(pipeArray[i][READ_END]);
+                close(pipeArray[i][WRITE_END]);
+            }
         }else if((commandIndex+1) == nrOfCommands){ // Last command in chain
             printf("Last in chain!\n");
 
-            dupPipe(pipeArray[commandIndex - 1], READ_END, STDIN_FILENO);
-            printf("Last with no pipe!!\n");
+            // Loope through pipes and open/close dup when nessecary
+            for (int i = 0; i < (nrOfCommands - 1); i++)
+            {
 
-        }else{ // Ordinary commands in chain
+                if (i == (commandIndex - 1))
+                {
+                    dupPipe(pipeArray[i], READ_END, STDIN_FILENO,com);
+                    close(close(pipeArray[i][WRITE_END]));
+                    fprintf(stderr, "%s closing %d\n", com.argv[0], pipeArray[i][WRITE_END]);
+                }
+                else // Close unused pipes
+                {
+
+                    fprintf(stderr, "%s closing pipe:%d:%d\n", com.argv[0], pipeArray[i][READ_END], pipeArray[i][WRITE_END]);
+
+                    close(pipeArray[i][READ_END]);
+                    close(pipeArray[i][WRITE_END]);
+                }
+            }
+        }
+        else
+        { // Ordinary commands in chain
             printf("In chain!\n");
 
-            dupPipe(pipeArray[commandIndex - 1], READ_END, STDIN_FILENO);
-            dupPipe(pipeArray[commandIndex], WRITE_END, STDOUT_FILENO);
+            // Loope through pipes and open/close dup when nessecary
+            for (int i = 0; i < (nrOfCommands - 1); i++){
+
+                if (i == (commandIndex - 1)){
+                    dupPipe(pipeArray[i], READ_END, STDIN_FILENO,com);
+                    close(pipeArray[i][WRITE_END]);
+                    fprintf(stderr, "%s closing %d\n", com.argv[0], pipeArray[i][WRITE_END]);
+                }else if (i == (commandIndex)){
+                    dupPipe(pipeArray[i], WRITE_END, STDOUT_FILENO,com);
+                    close(pipeArray[i][READ_END]);
+                    fprintf(stderr, "%s closing %d\n", com.argv[0], pipeArray[i][READ_END]);
+                }
+                else // Close unused pipes
+                {
+                    fprintf(stderr, "%s closing pipe:%d:%d\n", com.argv[0], pipeArray[i][READ_END], pipeArray[i][WRITE_END]);
+
+                    close(pipeArray[i][READ_END]);
+                    close(pipeArray[i][WRITE_END]);
+                }
+            }
         }
+        dprintf(STDERR_FILENO, "Excecv INCOMING! %s\n",com.argv[0]);
 
         // Skriv ut till fil osv redirect
-
         
         // Excecv!
-        printf("Go execvp!\n");
         if (execvp(com.argv[0], com.argv) == -1)
         {
             printf("Could not execute program. (%s) Try again.\n", com.argv[0]);
             exit(-1); // Kill child
         }
-
     }
-
     return 0;
 }
 
@@ -202,12 +237,14 @@ int runShell(int argc, char *argv[]){
         for (int i = 0; i < (NrOfCommands - 1); i++)
         { // Create pipes, fill pipeArray
             pipe(pipeArray[i]);
+            printf("Creating pipe: %d:%d\n", pipeArray[i][0], pipeArray[i][1]);
         }
 
         for (int i = 0; i < NrOfCommands; i++)
         {
             if(runCommand(comLine[i], commandIndex, NrOfCommands, pipeArray) != 0){
                 // ERROR probly could not find command
+                fprintf(stderr, "ERROR in runCommand()\n");
                 return -1;
             }
 
@@ -215,7 +252,6 @@ int runShell(int argc, char *argv[]){
             if (PROCESS_PID == 0){
                 break;
             }
-
             commandIndex++; // Keep track of which command in line to tell child, that is relevant for them
         }
     }
