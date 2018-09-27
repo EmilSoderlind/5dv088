@@ -30,8 +30,6 @@ int dupPipe(int pip[2], int end, int destfd){
         return -1;
     }
 
-    dprintf(STDERR_FILENO, "OSTKAKA!");
-
     return duplicatedFileDesc;
 }
 
