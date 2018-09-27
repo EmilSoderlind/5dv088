@@ -14,7 +14,9 @@
 
 int dupPipe(int pip[2], int end, int destfd){
 
-    if(close(destfd) == -1){
+    printf("%d:%d --r/w:%d--> %d\n",pip[0],pip[1],end,destfd);
+
+    if (close(destfd) == -1){
         return -1;
     }
 
@@ -27,7 +29,9 @@ int dupPipe(int pip[2], int end, int destfd){
     if(close(pip[end]) == -1){
         return -1;
     }
-   
+
+    dprintf(STDERR_FILENO, "OSTKAKA!");
+
     return duplicatedFileDesc;
 }
 
@@ -42,31 +46,9 @@ int dupPipe(int pip[2], int end, int destfd){
  */
 int redirect(char *filename, int flags, int destfd){
 
-    int fileDesc;
+    // TO BE WRITTEN
 
-    // IF WRITE
-    if(flags ){ 
 
-        if ((fileDesc = open(filename, flags)) == -1){
-            fprintf(stdout, "Could not open file\n"); // "Hello world" on stdout (using fprintf)
-            return -1; // Error opening file
-        }
-
-        if(close(destfd) == -1){
-            fprintf(stdout, "Could not close fileDescriptor %d\n", destfd); // "Hello world" on stdout (using fprintf)
-            return -1;
-        }
-
-        int shouldBeDestfd = dup(fileDesc);
-
-        if(shouldBeDestfd != destfd){
-            fprintf(stdout, "Could not dup-fileDescriptor %d\n", destfd); // "Hello world" on stdout (using fprintf)
-
-            return -1;
-        }
-
-    }
-    
     return destfd;
 }
 

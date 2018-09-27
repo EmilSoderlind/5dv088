@@ -20,4 +20,6 @@ int prompt(command commandArr[], int *NrOfCommands);
 
 int runCommand(command com, int pipeIndex, int nrOfCommands, int pipeArray[][2]);
 
+int runShell(int argc, char *argv[]);
+
 int main(int argc, char *argv[]);
