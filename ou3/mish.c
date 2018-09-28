@@ -81,7 +81,13 @@ int prompt(command commandArr[], int* NrOfCommands){
         return -1;
     }
 
-    printf("->%s<-", promptLine);
+    printf("strlen(promptLine): %lu\n", strlen(promptLine));
+
+    if (strlen(promptLine) == 1)
+    {
+        // NO INPUT
+        return -1;
+    }
 
     *NrOfCommands = parse(promptLine, commandArr);
 
@@ -267,7 +273,7 @@ int runShell(int argc, char *argv[]){
     {
         fprintf(stderr, "Parent starts to wait for (%d childs):\n", NR_OF_CHILDREN);
 
-        for (int i = 0; i < NR_OF_CHILDREN+2; i++){
+        for (int i = 0; i < NR_OF_CHILDREN+1; i++){
             int status;
             
             do{
@@ -306,8 +312,8 @@ int main(int argc, char *argv[]) {
         printf("Running MISH!\n");
         if (runShell(argc, argv) != 0)
         {
-            printf("ERROR!\n");
-            break;
+            printf("Error in runShell()\n");
+            //break;
         }
     }
 
