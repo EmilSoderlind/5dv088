@@ -294,7 +294,7 @@ int runShell(int argc, char *argv[]){
         printf("--\n");
     }
 
-    printf("Parent done with runShell()\n");
+    printf("Parent done with runShell() - %d children\n",NR_OF_CHILDREN);
     return 0;
 }
 
