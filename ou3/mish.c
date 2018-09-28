@@ -125,8 +125,6 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
         //printf("Command: %d/%d\n", commandIndex, nrOfCommands);
         printf("command-> (%s)\n", com.argv[0]);
 
-        // Kasta runt pipor!
-
         if(nrOfCommands == 1){ // Only 1 command
             printf("Only 1 command!\n");
         }else if(commandIndex == 0){ // First command in chain
@@ -151,11 +149,10 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
             fprintf(stderr, "%s closing %d\n", com.argv[0], pipeArray[commandIndex - 1][WRITE_END]);
 
             // Loope through pipes and close unused
-            for (int i = 0; i < (nrOfCommands - 1); i++)
-            {
+            for (int i = 0; i < (nrOfCommands - 1); i++){
 
-                if (i != (commandIndex - 1)) // Close unused pipes
-                {
+                // Close unused pipes
+                if (i != (commandIndex - 1)) {
                     close(pipeArray[i][READ_END]);
                     close(pipeArray[i][WRITE_END]);
                     fprintf(stderr, "%s closing pipe:%d:%d\n", com.argv[0], pipeArray[i][READ_END], pipeArray[i][WRITE_END]);
@@ -195,7 +192,7 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
 
         if (execvp(com.argv[0], com.argv) == -1){
             perror("execvp-ERROR: ");
-            printf("Could not execute program. (%s) Try again.\n", com.argv[0]);
+            printf("execvp() error | Could not execute program. (%s) Try again.\n", com.argv[0]);
             exit(-1); // Kill child
         }
     }
