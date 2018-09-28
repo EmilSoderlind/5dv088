@@ -24,8 +24,6 @@ int internal_echo(int argc, char *argv[]){
 
 int internal_cd(int argc, char *argv[]){
 
-    char *dir = argv[1] == NULL ? getenv("HOME") : argv[1];
-
     char *directory = "";
 
     if (argv[1] == NULL){
@@ -111,7 +109,7 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
     if (tempPID != 0){ // Parent <- Save childrens PID
         PID_CHILDREN_ARRAY[NR_OF_CHILDREN] = tempPID;
         NR_OF_CHILDREN++;
-        printf("Fork->NR_OF_CHILDREN: %d\n", NR_OF_CHILDREN);
+        printf("Fork(%d)->NR_OF_CHILDREN: %d\n", tempPID, NR_OF_CHILDREN);
     }else{ // Children <- Set childrens PROCESS_PID
         PROCESS_PID = tempPID;
     }
@@ -119,14 +117,14 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
     if(PROCESS_PID == 0){ // CHILD
 
         //printf("Command: %d/%d\n", commandIndex, nrOfCommands);
-        printf("com-> (%s)\n", com.argv[0]);
+        printf("command-> (%s)\n", com.argv[0]);
 
         // Kasta runt pipor!
 
         if(nrOfCommands == 1){ // Only 1 command
             printf("Only 1 command!\n");
         }else if(commandIndex == 0){ // First command in chain
-            printf("First in chain!\n");
+            printf("comInxex: %d/%d | First in chain!\n", commandIndex, nrOfCommands);
 
             dupPipe(pipeArray[0],WRITE_END,STDOUT_FILENO,com);
             close(pipeArray[0][READ_END]);
@@ -140,31 +138,27 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
                 close(pipeArray[i][WRITE_END]);
             }
         }else if((commandIndex+1) == nrOfCommands){ // Last command in chain
-            printf("Last in chain!\n");
+            printf("comInxex: %d/%d | Last in chain!\n",commandIndex,nrOfCommands);
 
-            // Loope through pipes and open/close dup when nessecary
+            dupPipe(pipeArray[commandIndex-1], READ_END, STDIN_FILENO, com);
+            close(pipeArray[commandIndex - 1][WRITE_END]);
+            fprintf(stderr, "%s closing %d\n", com.argv[0], pipeArray[commandIndex - 1][WRITE_END]);
+
+            // Loope through pipes and close unused
             for (int i = 0; i < (nrOfCommands - 1); i++)
             {
 
-                if (i == (commandIndex - 1))
+                if (i != (commandIndex - 1)) // Close unused pipes
                 {
-                    dupPipe(pipeArray[i], READ_END, STDIN_FILENO,com);
-                    close(close(pipeArray[i][WRITE_END]));
-                    fprintf(stderr, "%s closing %d\n", com.argv[0], pipeArray[i][WRITE_END]);
-                }
-                else // Close unused pipes
-                {
-
-                    fprintf(stderr, "%s closing pipe:%d:%d\n", com.argv[0], pipeArray[i][READ_END], pipeArray[i][WRITE_END]);
-
                     close(pipeArray[i][READ_END]);
                     close(pipeArray[i][WRITE_END]);
+                    fprintf(stderr, "%s closing pipe:%d:%d\n", com.argv[0], pipeArray[i][READ_END], pipeArray[i][WRITE_END]);
                 }
             }
         }
         else
         { // Ordinary commands in chain
-            printf("In chain!\n");
+            printf("comInxex: %d/%d | Middle of chain!\n", commandIndex, nrOfCommands);
 
             // Loope through pipes and open/close dup when nessecary
             for (int i = 0; i < (nrOfCommands - 1); i++){
@@ -180,10 +174,9 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
                 }
                 else // Close unused pipes
                 {
-                    fprintf(stderr, "%s closing pipe:%d:%d\n", com.argv[0], pipeArray[i][READ_END], pipeArray[i][WRITE_END]);
-
                     close(pipeArray[i][READ_END]);
                     close(pipeArray[i][WRITE_END]);
+                    fprintf(stderr, "%s closing pipe:%d:%d\n", com.argv[0], pipeArray[i][READ_END], pipeArray[i][WRITE_END]);
                 }
             }
         }
@@ -192,8 +185,10 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
         
         // Excecv!
         dprintf(STDERR_FILENO, "Excecv INCOMING! %s\n", com.argv[0]);
-        
+        fflush(stdout);
+
         if (execvp(com.argv[0], com.argv) == -1){
+            perror("execvp-ERROR: ");
             printf("Could not execute program. (%s) Try again.\n", com.argv[0]);
             exit(-1); // Kill child
         }
@@ -261,28 +256,32 @@ int runShell(int argc, char *argv[]){
             for (int i = 0; i < (NrOfCommands - 1); i++) // Close unused pipes
             {
                 fprintf(stderr, "Parent closing pipe:%d:%d\n", pipeArray[i][READ_END], pipeArray[i][WRITE_END]);
-                
+
                 close(pipeArray[i][READ_END]);
                 close(pipeArray[i][WRITE_END]);
             }
         }
-
     }
 
     if (PROCESS_PID != 0) // PARENT WAIT
-    { 
+    {
+        fprintf(stderr, "Parent starts to wait for (%d childs):\n", NR_OF_CHILDREN);
 
-        for (int i = 0; i < NR_OF_CHILDREN+1; i++)
-        {
+        for (int i = 0; i < NR_OF_CHILDREN+2; i++){
             int status;
             
             do{
+                printf("wait for PID:%d\n", i);
                 waitpid(PID_CHILDREN_ARRAY[i], &status, 0);
             } while (!WIFEXITED(status) && !WIFSIGNALED(status));
 
             NR_OF_CHILDREN--;
+            printf("(%d) is dead ->NR_OF_CHILDREN: %d\n", PID_CHILDREN_ARRAY[i], NR_OF_CHILDREN);
             printf("Parent says: Child exited with status %d \n", status);
-            printf("->NR_OF_CHILDREN: %d\n", NR_OF_CHILDREN);
+
+            fflush(stdin);
+            fflush(stdout);
+
             //printf("WEXITSTATUS: %d\n", WEXITSTATUS(status));
             //printf("WIFEXITED: %d\n", WIFEXITED(status));
             //printf("WIFSIGNALED: %d\n", WIFSIGNALED(status));
@@ -295,6 +294,7 @@ int runShell(int argc, char *argv[]){
         printf("--\n");
     }
 
+    printf("Parent done with runShell()\n");
     return 0;
 }
 
@@ -303,7 +303,9 @@ int main(int argc, char *argv[]) {
 
 
     while(1){
-        if(runShell(argc,argv) != 0){
+        printf("Running MISH!\n");
+        if (runShell(argc, argv) != 0)
+        {
             printf("ERROR!\n");
             break;
         }
