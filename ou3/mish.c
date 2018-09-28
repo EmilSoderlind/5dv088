@@ -74,19 +74,22 @@ int prompt(command commandArr[], int* NrOfCommands){
 
 
     char promptLine[MAXWORDS];
+    promptLine[0] = '\0';
 
-    if (fgets(promptLine, MAXWORDS, stdin) == NULL)
-    {
+    if (fgets(promptLine, MAXWORDS, stdin) == NULL){
         // ERROR
-        printf("ERROR! ");
+        printf("ERROR!");
         puts(promptLine);
-        return 1;
+        return -1;
     }
+
+    printf("->%s<-", promptLine);
 
     *NrOfCommands = parse(promptLine, commandArr);
 
     for(int k = 0; k<*NrOfCommands;k++){
-        //print_command(commandArr[k]);
+        printf("Straight out of parse\n");
+        print_command(commandArr[k]);
     }
 
     return 0;
@@ -184,13 +187,13 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
                 }
             }
         }
-        dprintf(STDERR_FILENO, "Excecv INCOMING! %s\n",com.argv[0]);
 
         // Skriv ut till fil osv redirect
         
         // Excecv!
-        if (execvp(com.argv[0], com.argv) == -1)
-        {
+        dprintf(STDERR_FILENO, "Excecv INCOMING! %s\n", com.argv[0]);
+        
+        if (execvp(com.argv[0], com.argv) == -1){
             printf("Could not execute program. (%s) Try again.\n", com.argv[0]);
             exit(-1); // Kill child
         }
@@ -240,8 +243,7 @@ int runShell(int argc, char *argv[]){
             printf("Creating pipe: %d:%d\n", pipeArray[i][0], pipeArray[i][1]);
         }
 
-        for (int i = 0; i < NrOfCommands; i++)
-        {
+        for (int i = 0; i < NrOfCommands; i++){
             if(runCommand(comLine[i], commandIndex, NrOfCommands, pipeArray) != 0){
                 // ERROR probly could not find command
                 fprintf(stderr, "ERROR in runCommand()\n");
@@ -254,10 +256,21 @@ int runShell(int argc, char *argv[]){
             }
             commandIndex++; // Keep track of which command in line to tell child, that is relevant for them
         }
+
+        if(PROCESS_PID != 0){ // CLOSE PIPES IN PARENT
+            for (int i = 0; i < (NrOfCommands - 1); i++) // Close unused pipes
+            {
+                fprintf(stderr, "Parent closing pipe:%d:%d\n", pipeArray[i][READ_END], pipeArray[i][WRITE_END]);
+                
+                close(pipeArray[i][READ_END]);
+                close(pipeArray[i][WRITE_END]);
+            }
+        }
+
     }
 
-    if (PROCESS_PID != 0)
-    { // PARENT WAIT
+    if (PROCESS_PID != 0) // PARENT WAIT
+    { 
 
         for (int i = 0; i < NR_OF_CHILDREN+1; i++)
         {
