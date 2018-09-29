@@ -268,12 +268,17 @@ int runShell(void){
     if (PROCESS_PID != 0) // PARENT WAIT
     {
         fprintf(stderr, "Parent starts to wait for (%d childs):\n", NR_OF_CHILDREN);
+        fprintf(stderr, "--\n");
+        fprintf(stderr, "PID_arr: \n");
+        for (int h = 0; h < (int)NR_OF_CHILDREN; h++)
+        {
+            fprintf(stderr, "%d | %d\n", h, PID_CHILDREN_ARRAY[h]);
+        }
+        fprintf(stderr, "--\n");
 
         for (int i = 0; i < (int)NR_OF_CHILDREN; i++)
         {
             int status;
-
-            
 
             fprintf(stderr, "wait for PID:%d\n", PID_CHILDREN_ARRAY[i]);
             fflush(stderr);
