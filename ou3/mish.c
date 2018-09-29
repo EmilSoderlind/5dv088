@@ -269,15 +269,16 @@ int runShell(void){
     {
         fprintf(stderr, "Parent starts to wait for (%d childs):\n", NR_OF_CHILDREN);
 
-        for (int i = 0; i < (int)NR_OF_CHILDREN+1; i++){
+        for (int i = 0; i < (int)NR_OF_CHILDREN; i++)
+        {
             int status;
+
             
+
             fprintf(stderr, "wait for PID:%d\n", PID_CHILDREN_ARRAY[i]);
             fflush(stderr);
             waitpid(PID_CHILDREN_ARRAY[i], &status, 0);
 
-
-            NR_OF_CHILDREN--;
             fprintf(stderr, "(%d) is dead ->NR_OF_CHILDREN: %d\n", PID_CHILDREN_ARRAY[i], NR_OF_CHILDREN);
             fprintf(stderr, "Parent says: Child exited with status %d \n", status);
             
@@ -285,7 +286,15 @@ int runShell(void){
             //printf("WIFEXITED: %d\n", WIFEXITED(status));
             //printf("WIFSIGNALED: %d\n", WIFSIGNALED(status));
             //printf("WIFSTOPPED: %d\n", WIFSTOPPED(status));
-            
+            PID_CHILDREN_ARRAY[i] = 0;
+
+            fprintf(stderr, "--\n");
+            fprintf(stderr, "PID_arr: \n");
+            for (int h = 0; h < (int)NR_OF_CHILDREN; h++)
+            {
+                fprintf(stderr, "%d | %d\n", h, PID_CHILDREN_ARRAY[h]);
+            }
+            fprintf(stderr, "--\n");
         }
     }else{
         // REMOVE LATER JUST DEBUG
@@ -293,8 +302,8 @@ int runShell(void){
         fprintf(stderr, "--\n");
     }
 
-    fprintf(stderr, "Parent done with runShell() - %d children\n", NR_OF_CHILDREN);
-
+    fprintf(stderr, "Parent done with runShell()\n");
+    NR_OF_CHILDREN = 0;
     return 0;
 }
 
