@@ -272,10 +272,10 @@ int runShell(void){
         for (int i = 0; i < (int)NR_OF_CHILDREN+1; i++){
             int status;
             
-            do{
-                fprintf(stderr, "wait for PID:%d\n", PID_CHILDREN_ARRAY[i]);
-                waitpid(PID_CHILDREN_ARRAY[i], &status, 0);
-            } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+            fprintf(stderr, "wait for PID:%d\n", PID_CHILDREN_ARRAY[i]);
+            fflush(stderr);
+            waitpid(PID_CHILDREN_ARRAY[i], &status, 0);
+
 
             NR_OF_CHILDREN--;
             fprintf(stderr, "(%d) is dead ->NR_OF_CHILDREN: %d\n", PID_CHILDREN_ARRAY[i], NR_OF_CHILDREN);
@@ -294,6 +294,7 @@ int runShell(void){
     }
 
     fprintf(stderr, "Parent done with runShell() - %d children\n", NR_OF_CHILDREN);
+
     return 0;
 }
 
