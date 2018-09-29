@@ -22,7 +22,7 @@ int internal_echo(int argc, char *argv[]){
     return 0;
 }
 
-int internal_cd(int argc, char *argv[]){
+int internal_cd(char *argv[]){
 
     char *directory = "";
 
@@ -108,7 +108,7 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
     // Fork
     if ((tempPID = fork()) < 0){
         // ERROR
-        printf("Error forking!");
+        perror("Error forking!");
         return 1;
     }
 
@@ -137,10 +137,10 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
             for (int i = 1; i < (nrOfCommands - 1); i++) // Close unused pipes
             {
                 fprintf(stderr, "%s closing pipe:%d:%d\n", com.argv[0], pipeArray[i][READ_END], pipeArray[i][WRITE_END]);
-
                 close(pipeArray[i][READ_END]);
                 close(pipeArray[i][WRITE_END]);
             }
+       
         }else if((commandIndex+1) == nrOfCommands){ // Last command in chain
             printf("comInxex: %d/%d | Last in chain!\n",commandIndex,nrOfCommands);
 
@@ -199,7 +199,7 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
     return 0;
 }
 
-int runShell(int argc, char *argv[]){
+int runShell(void){
 
     command comLine[MAX_COMMANDS + 1];
     int NrOfCommands = 0;
@@ -221,7 +221,7 @@ int runShell(int argc, char *argv[]){
         printf("Found internal command\n");
         if (STRCMP(comLine[0].argv[0], ==, "cd"))
         {
-            internal_cd(comLine[0].argc, comLine[0].argv);
+            internal_cd(comLine[0].argv);
         }
         if (STRCMP(comLine[0].argv[0], ==, "echo"))
         {
@@ -235,8 +235,8 @@ int runShell(int argc, char *argv[]){
         int pipeArray[NrOfCommands - 1][2];
         int commandIndex = 0;
 
-        for (int i = 0; i < (NrOfCommands - 1); i++)
-        { // Create pipes, fill pipeArray
+        for (int i = 0; i < (NrOfCommands - 1); i++) // CREATE PIPES, fill pipeArray
+        { 
             pipe(pipeArray[i]);
             printf("Creating pipe: %d:%d\n", pipeArray[i][0], pipeArray[i][1]);
         }
@@ -270,11 +270,11 @@ int runShell(int argc, char *argv[]){
     {
         fprintf(stderr, "Parent starts to wait for (%d childs):\n", NR_OF_CHILDREN);
 
-        for (int i = 0; i < NR_OF_CHILDREN+1; i++){
+        for (int i = 0; i < (int)NR_OF_CHILDREN+1; i++){
             int status;
             
             do{
-                printf("wait for PID:%d\n", i);
+                printf("wait for PID:%d\n", PID_CHILDREN_ARRAY[i]);
                 waitpid(PID_CHILDREN_ARRAY[i], &status, 0);
             } while (!WIFEXITED(status) && !WIFSIGNALED(status));
 
@@ -285,10 +285,10 @@ int runShell(int argc, char *argv[]){
             fflush(stdin);
             fflush(stdout);
 
-            //printf("WEXITSTATUS: %d\n", WEXITSTATUS(status));
-            //printf("WIFEXITED: %d\n", WIFEXITED(status));
-            //printf("WIFSIGNALED: %d\n", WIFSIGNALED(status));
-            //printf("WIFSTOPPED: %d\n", WIFSTOPPED(status));
+                //printf("WEXITSTATUS: %d\n", WEXITSTATUS(status));
+                //printf("WIFEXITED: %d\n", WIFEXITED(status));
+                //printf("WIFSIGNALED: %d\n", WIFSIGNALED(status));
+                //printf("WIFSTOPPED: %d\n", WIFSTOPPED(status));
             printf("--\n");
         }
     }else{
@@ -302,12 +302,14 @@ int runShell(int argc, char *argv[]){
 }
 
 
-int main(int argc, char *argv[]) {
+int main(void) {
 
+    bool loopCond = true;
 
-    while(1){
+    while(loopCond){
         printf("Running MISH!\n");
-        if (runShell(argc, argv) != 0)
+
+        if (runShell() != 0)
         {
             printf("Error in runShell()\n");
             //break;

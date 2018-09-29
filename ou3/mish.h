@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
+#include <stdbool.h>
 
 #include <unistd.h>
 #include <sys/wait.h>
@@ -16,12 +17,14 @@ static const unsigned int MAX_COMMANDS = 20;
 
 int internal_echo(int argc, char *argv[]);
 
-int internal_cd(int argc, char *argv[]);
+int internal_cd(char *argv[]);
 
 int prompt(command commandArr[], int *NrOfCommands);
 
 int runCommand(command com, int pipeIndex, int nrOfCommands, int pipeArray[][2]);
 
-int runShell(int argc, char *argv[]);
+int runShell(void);
 
-int main(int argc, char *argv[]);
+int main(void);
+
+void print_command(command com);
