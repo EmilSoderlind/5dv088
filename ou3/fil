@@ -1,0 +1,302 @@
+Running MISH!
+strlen(promptLine): 33
+Straight out of parse
+{
+  Argv: ["cat", "hiFile.txt"]
+  Argc: 2
+  Infile: (null)
+  Outfile: (null)
+}
+Straight out of parse
+{
+  Argv: ["grep", "godis"]
+  Argc: 2
+  Infile: (null)
+  Outfile: (null)
+}
+Straight out of parse
+{
+  Argv: ["wc"]
+  Argc: 1
+  Infile: (null)
+  Outfile: (null)
+}
+Creating pipe: 3:4
+Creating pipe: 5:6
+Fork(16176)->NR_OF_CHILDREN: 1
+Fork(16177)->NR_OF_CHILDREN: 2
+command-> (cat)
+comInxex: 0/3 | First in chain!
+cat closing 1
+cat dup 4
+cat closing 4
+command-> (grep)
+cat closing 3
+cat closing pipe:5:6
+Excecv INCOMING! cat
+Fork(16178)->NR_OF_CHILDREN: 3
+Parent closing pipe:3:4
+comInxex: 1/3 | Middle of chain!
+grep closing 0
+Parent closing pipe:5:6
+grep dup 3
+Parent starts to wait for (3 childs):
+grep closing 3
+wait for PID:16176
+command-> (wc)
+comInxex: 2/3 | Last in chain!
+wc closing 0
+grep closing 4
+grep closing 1
+grep dup 6
+grep closing 6
+wc dup 5
+grep closing 5
+Excecv INCOMING! grep
+wc closing 5
+wc closing 6
+wc closing pipe:3:4
+Excecv INCOMING! wc
+(16176) is dead ->NR_OF_CHILDREN: 2
+Parent says: Child exited with status 0 
+wait for PID:16177
+(16177) is dead ->NR_OF_CHILDREN: 1
+Parent says: Child exited with status 0 
+Parent done with runShell() - 1 children
+Running MISH!
+strlen(promptLine): 4
+Straight out of parse
+{
+  Argv: ["pwd"]
+  Argc: 1
+  Infile: (null)
+  Outfile: (null)
+}
+Fork(16179)->NR_OF_CHILDREN: 2
+Parent starts to wait for (2 childs):
+wait for PID:16176
+(16176) is dead ->NR_OF_CHILDREN: 1
+Parent says: Child exited with status 0 
+wait for PID:16179
+command-> (pwd)
+Only 1 command!
+Excecv INCOMING! pwd
+(16179) is dead ->NR_OF_CHILDREN: 0
+Parent says: Child exited with status 0 
+Parent done with runShell() - 0 children
+Running MISH!
+strlen(promptLine): 34
+Straight out of parse
+{
+  Argv: ["cat", "hiFile.txt"]
+  Argc: 2
+  Infile: (null)
+  Outfile: (null)
+}
+Straight out of parse
+{
+  Argv: [" grep", "godis"]
+  Argc: 2
+  Infile: (null)
+  Outfile: (null)
+}
+Straight out of parse
+{
+  Argv: ["wc"]
+  Argc: 1
+  Infile: (null)
+  Outfile: (null)
+}
+Creating pipe: 3:4
+Creating pipe: 5:6
+Fork(16180)->NR_OF_CHILDREN: 1
+Fork(16181)->NR_OF_CHILDREN: 2
+command-> (cat)
+comInxex: 0/3 | First in chain!
+cat closing 1
+cat dup 4
+cat closing 4
+cat closing 3
+cat closing pipe:5:6
+Fork(16182)->NR_OF_CHILDREN: 3
+Excecv INCOMING! cat
+Parent closing pipe:3:4
+Parent closing pipe:5:6
+Parent starts to wait for (3 childs):
+wait for PID:16180
+command-> ( grep)
+comInxex: 1/3 | Middle of chain!
+ grep closing 0
+ grep dup 3
+command-> (wc)
+comInxex: 2/3 | Last in chain!
+wc closing 0
+ grep closing 3
+ grep closing 4
+ grep closing 1
+ grep dup 6
+ grep closing 6
+wc dup 5
+ grep closing 5
+Excecv INCOMING!  grep
+wc closing 5
+wc closing 6
+wc closing pipe:3:4
+Excecv INCOMING! wc
+execvp-ERROR: : No such file or directory
+execvp() error | Could not execute program. ( grep) Try again.
+(16180) is dead ->NR_OF_CHILDREN: 2
+Parent says: Child exited with status 13 
+wait for PID:16181
+(16181) is dead ->NR_OF_CHILDREN: 1
+Parent says: Child exited with status 65280 
+Parent done with runShell() - 1 children
+Running MISH!
+strlen(promptLine): 3
+Straight out of parse
+{
+  Argv: ["ls"]
+  Argc: 1
+  Infile: (null)
+  Outfile: (null)
+}
+Fork(16183)->NR_OF_CHILDREN: 2
+Parent starts to wait for (2 childs):
+wait for PID:16180
+(16180) is dead ->NR_OF_CHILDREN: 1
+Parent says: Child exited with status 65280 
+wait for PID:16183
+command-> (ls)
+Only 1 command!
+Excecv INCOMING! ls
+(16183) is dead ->NR_OF_CHILDREN: 0
+Parent says: Child exited with status 0 
+Parent done with runShell() - 0 children
+Running MISH!
+strlen(promptLine): 15
+Straight out of parse
+{
+  Argv: ["cat", "hiFile.txt"]
+  Argc: 2
+  Infile: (null)
+  Outfile: (null)
+}
+Fork(16184)->NR_OF_CHILDREN: 1
+Parent starts to wait for (1 childs):
+wait for PID:16184
+command-> (cat)
+Only 1 command!
+Excecv INCOMING! cat
+(16184) is dead ->NR_OF_CHILDREN: 0
+Parent says: Child exited with status 0 
+Parent done with runShell() - 0 children
+Running MISH!
+strlen(promptLine): 28
+Straight out of parse
+{
+  Argv: ["cat", "hiFile.txt"]
+  Argc: 2
+  Infile: (null)
+  Outfile: (null)
+}
+Straight out of parse
+{
+  Argv: ["grep", "godis"]
+  Argc: 2
+  Infile: (null)
+  Outfile: (null)
+}
+Creating pipe: 3:4
+Fork(16185)->NR_OF_CHILDREN: 1
+Fork(16186)->NR_OF_CHILDREN: 2
+Parent closing pipe:3:4
+Parent starts to wait for (2 childs):
+wait for PID:16185
+command-> (cat)
+comInxex: 0/2 | First in chain!
+cat closing 1
+cat dup 4
+cat closing 4
+cat closing 3
+Excecv INCOMING! cat
+command-> (grep)
+comInxex: 1/2 | Last in chain!
+grep closing 0
+grep dup 3
+grep closing 3
+grep closing 4
+Excecv INCOMING! grep
+(16185) is dead ->NR_OF_CHILDREN: 1
+Parent says: Child exited with status 0 
+wait for PID:16186
+(16186) is dead ->NR_OF_CHILDREN: 0
+Parent says: Child exited with status 0 
+Parent done with runShell() - 0 children
+Running MISH!
+strlen(promptLine): 34
+Straight out of parse
+{
+  Argv: ["cat", "hiFile.txt"]
+  Argc: 2
+  Infile: (null)
+  Outfile: (null)
+}
+Straight out of parse
+{
+  Argv: [" grep", "godis"]
+  Argc: 2
+  Infile: (null)
+  Outfile: (null)
+}
+Straight out of parse
+{
+  Argv: ["wc"]
+  Argc: 1
+  Infile: (null)
+  Outfile: (null)
+}
+Creating pipe: 3:4
+Creating pipe: 5:6
+Fork(16187)->NR_OF_CHILDREN: 1
+Fork(16188)->NR_OF_CHILDREN: 2
+command-> (cat)
+comInxex: 0/3 | First in chain!
+cat closing 1
+cat dup 4
+cat closing 4
+cat closing 3
+cat closing pipe:5:6
+Excecv INCOMING! cat
+Fork(16189)->NR_OF_CHILDREN: 3
+Parent closing pipe:3:4
+Parent closing pipe:5:6
+Parent starts to wait for (3 childs):
+wait for PID:16187
+command-> (wc)
+comInxex: 2/3 | Last in chain!
+wc closing 0
+wc dup 5
+command-> ( grep)
+comInxex: 1/3 | Middle of chain!
+ grep closing 0
+ grep dup 3
+wc closing 5
+wc closing 6
+wc closing pipe:3:4
+Excecv INCOMING! wc
+ grep closing 3
+ grep closing 4
+ grep closing 1
+ grep dup 6
+ grep closing 6
+ grep closing 5
+Excecv INCOMING!  grep
+execvp-ERROR: : No such file or directory
+execvp() error | Could not execute program. ( grep) Try again.
+(16187) is dead ->NR_OF_CHILDREN: 2
+Parent says: Child exited with status 13 
+wait for PID:16188
+(16188) is dead ->NR_OF_CHILDREN: 1
+Parent says: Child exited with status 65280 
+Parent done with runShell() - 1 children
+Running MISH!

@@ -10,9 +10,9 @@ int internal_echo(int argc, char *argv[]){
 
     for (int i = 1; i<argc; i++){
         if(argc <= 2){
-            printf("%s", argv[i]);
+            fprintf(stderr,"%s", argv[i]);
         }else{
-            printf("%s ", argv[i]);
+            fprintf(stderr,"%s ", argv[i]);
         }
     }
 
@@ -44,44 +44,44 @@ int internal_cd(char *argv[]){
 void print_command(command com){
     int i = 0;
 
-    printf("{\n");
-    printf("  Argv: [");
+    fprintf(stderr, "{\n");
+    fprintf(stderr, "  Argv: [");
 
     while (*(com.argv + i) != NULL)
     {
         /* Print each argument. */
-        printf("\"%s\"", (*(com.argv + i)));
+        fprintf(stderr, "\"%s\"", (*(com.argv + i)));
         if (i < com.argc - 1)
-            printf(", ");
+            fprintf(stderr, ", ");
 
         i++;
     }
-    printf("]\n");
+    fprintf(stderr, "]\n");
 
-    printf("  Argc: %d\n", com.argc);
-    printf("  Infile: %s\n", com.infile);
-    printf("  Outfile: %s\n", com.outfile);
-    printf("}\n");
+    fprintf(stderr, "  Argc: %d\n", com.argc);
+    fprintf(stderr, "  Infile: %s\n", com.infile);
+    fprintf(stderr, "  Outfile: %s\n", com.outfile);
+    fprintf(stderr,"}\n");
 }
 
 // Promt prompt, wait for input, parse input and fill CommandLine[] + NrOfCommands
 int prompt(command commandArr[], int* NrOfCommands){
 
-    fprintf(stderr, "mish%% ");
+    fflush(stdout);
+    printf("mish%% ");
     fflush(stderr);
-
 
     char promptLine[MAXWORDS];
     promptLine[0] = '\0';
 
     if (fgets(promptLine, MAXWORDS, stdin) == NULL){
         // ERROR
-        printf("ERROR!");
+        fprintf(stderr, "ERROR!");
         puts(promptLine);
         return -1;
     }
 
-    printf("strlen(promptLine): %lu\n", strlen(promptLine));
+    fprintf(stderr,"strlen(promptLine): %lu\n", strlen(promptLine));
 
     if (strlen(promptLine) == 1)
     {
@@ -92,7 +92,7 @@ int prompt(command commandArr[], int* NrOfCommands){
     *NrOfCommands = parse(promptLine, commandArr);
 
     for(int k = 0; k<*NrOfCommands;k++){
-        printf("Straight out of parse\n");
+        fprintf(stderr, "Straight out of parse\n");
         print_command(commandArr[k]);
     }
 
@@ -115,7 +115,7 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
     if (tempPID != 0){ // Parent <- Save childrens PID
         PID_CHILDREN_ARRAY[NR_OF_CHILDREN] = tempPID;
         NR_OF_CHILDREN++;
-        printf("Fork(%d)->NR_OF_CHILDREN: %d\n", tempPID, NR_OF_CHILDREN);
+        fprintf(stderr, "Fork(%d)->NR_OF_CHILDREN: %d\n", tempPID, NR_OF_CHILDREN);
     }else{ // Children <- Set childrens PROCESS_PID
         PROCESS_PID = tempPID;
     }
@@ -123,12 +123,12 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
     if(PROCESS_PID == 0){ // CHILD
 
         //printf("Command: %d/%d\n", commandIndex, nrOfCommands);
-        printf("command-> (%s)\n", com.argv[0]);
+        fprintf(stderr, "command-> (%s)\n", com.argv[0]);
 
         if(nrOfCommands == 1){ // Only 1 command
-            printf("Only 1 command!\n");
+            fprintf(stderr, "Only 1 command!\n");
         }else if(commandIndex == 0){ // First command in chain
-            printf("comInxex: %d/%d | First in chain!\n", commandIndex, nrOfCommands);
+            fprintf(stderr, "comInxex: %d/%d | First in chain!\n", commandIndex, nrOfCommands);
 
             dupPipe(pipeArray[0],WRITE_END,STDOUT_FILENO,com);
             close(pipeArray[0][READ_END]);
@@ -142,7 +142,7 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
             }
        
         }else if((commandIndex+1) == nrOfCommands){ // Last command in chain
-            printf("comInxex: %d/%d | Last in chain!\n",commandIndex,nrOfCommands);
+            fprintf(stderr, "comInxex: %d/%d | Last in chain!\n", commandIndex, nrOfCommands);
 
             dupPipe(pipeArray[commandIndex-1], READ_END, STDIN_FILENO, com);
             close(pipeArray[commandIndex - 1][WRITE_END]);
@@ -161,7 +161,7 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
         }
         else
         { // Ordinary commands in chain
-            printf("comInxex: %d/%d | Middle of chain!\n", commandIndex, nrOfCommands);
+            fprintf(stderr, "comInxex: %d/%d | Middle of chain!\n", commandIndex, nrOfCommands);
 
             // Loope through pipes and open/close dup when nessecary
             for (int i = 0; i < (nrOfCommands - 1); i++){
@@ -188,11 +188,10 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
         
         // Excecv!
         dprintf(STDERR_FILENO, "Excecv INCOMING! %s\n", com.argv[0]);
-        fflush(stdout);
 
         if (execvp(com.argv[0], com.argv) == -1){
             perror("execvp-ERROR: ");
-            printf("execvp() error | Could not execute program. (%s) Try again.\n", com.argv[0]);
+            fprintf(stderr, "execvp() error | Could not execute program. (%s) Try again.\n", com.argv[0]);
             exit(-1); // Kill child
         }
     }
@@ -211,14 +210,14 @@ int runShell(void){
     if (prompt(comLine, &NrOfCommands) != 0)
     {
         // ERROR
-        printf("Error in prompt!\n");
+        fprintf(stderr, "Error in prompt!\n");
         return -1;
     }
 
     // Internal commands
     if (STRCMP(comLine[0].argv[0], ==, "echo") || STRCMP(comLine[0].argv[0], ==, "cd"))
     {
-        printf("Found internal command\n");
+        fprintf(stderr, "Found internal command\n");
         if (STRCMP(comLine[0].argv[0], ==, "cd"))
         {
             internal_cd(comLine[0].argv);
@@ -238,7 +237,7 @@ int runShell(void){
         for (int i = 0; i < (NrOfCommands - 1); i++) // CREATE PIPES, fill pipeArray
         { 
             pipe(pipeArray[i]);
-            printf("Creating pipe: %d:%d\n", pipeArray[i][0], pipeArray[i][1]);
+            fprintf(stderr, "Creating pipe: %d:%d\n", pipeArray[i][0], pipeArray[i][1]);
         }
 
         for (int i = 0; i < NrOfCommands; i++){
@@ -274,30 +273,27 @@ int runShell(void){
             int status;
             
             do{
-                printf("wait for PID:%d\n", PID_CHILDREN_ARRAY[i]);
+                fprintf(stderr, "wait for PID:%d\n", PID_CHILDREN_ARRAY[i]);
                 waitpid(PID_CHILDREN_ARRAY[i], &status, 0);
             } while (!WIFEXITED(status) && !WIFSIGNALED(status));
 
             NR_OF_CHILDREN--;
-            printf("(%d) is dead ->NR_OF_CHILDREN: %d\n", PID_CHILDREN_ARRAY[i], NR_OF_CHILDREN);
-            printf("Parent says: Child exited with status %d \n", status);
-
-            fflush(stdin);
-            fflush(stdout);
-
-                //printf("WEXITSTATUS: %d\n", WEXITSTATUS(status));
-                //printf("WIFEXITED: %d\n", WIFEXITED(status));
-                //printf("WIFSIGNALED: %d\n", WIFSIGNALED(status));
-                //printf("WIFSTOPPED: %d\n", WIFSTOPPED(status));
-            printf("--\n");
+            fprintf(stderr, "(%d) is dead ->NR_OF_CHILDREN: %d\n", PID_CHILDREN_ARRAY[i], NR_OF_CHILDREN);
+            fprintf(stderr, "Parent says: Child exited with status %d \n", status);
+            
+            //printf("WEXITSTATUS: %d\n", WEXITSTATUS(status));
+            //printf("WIFEXITED: %d\n", WIFEXITED(status));
+            //printf("WIFSIGNALED: %d\n", WIFSIGNALED(status));
+            //printf("WIFSTOPPED: %d\n", WIFSTOPPED(status));
+            
         }
     }else{
         // REMOVE LATER JUST DEBUG
-        printf("PID(%d) DONE\n", PROCESS_PID);
-        printf("--\n");
+        fprintf(stderr, "PID(%d) DONE\n", PROCESS_PID);
+        fprintf(stderr, "--\n");
     }
 
-    printf("Parent done with runShell() - %d children\n",NR_OF_CHILDREN);
+    fprintf(stderr, "Parent done with runShell() - %d children\n", NR_OF_CHILDREN);
     return 0;
 }
 
@@ -307,16 +303,14 @@ int main(void) {
     bool loopCond = true;
 
     while(loopCond){
-        printf("Running MISH!\n");
+        fprintf(stderr, "Running MISH!\n");
 
         if (runShell() != 0)
         {
-            printf("Error in runShell()\n");
+            fprintf(stderr, "Error in runShell()\n");
             //break;
         }
     }
-
-    fflush(stderr);
 
     return 0;
 }
