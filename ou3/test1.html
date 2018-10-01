@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>psudoCode</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="mish-psudocode-emil-söderlind">Mish Psudocode (EMIL SÖDERLIND)</h1>
+<ul>
+<li><p>Create PID-Array</p></li>
+<li><p>Print prompt</p></li>
+<li><p>Import command-row</p></li>
+<li><p>Command-row –&gt; Parser –&gt; CommandLine[] + NrOfCommands</p></li>
+<li>If CommandLine[0] == “Echo”
+<ul>
+<li>Run internal echo</li>
+<li>Go back to prompt</li>
+</ul></li>
+<li>If CommandLine[0] == “cd”
+<ul>
+<li>Run internal cd</li>
+<li>Go back to prompt</li>
+</ul></li>
+<li>else
+<ul>
+<li>Create pipes (#NrOfCommands-1)</li>
+<li>Pipe-index = 0 | Keep track of filedesc to close/open etc)</li>
+<li>For each command in CommandLine[]
+<ul>
+<li>PID = fork()</li>
+<li>Check PID (!= -1)</li>
+<li>Append to PID-Array | PARENT</li>
+<li>If(PID == 0) | CHILD
+<ul>
+<li>If(Pipe-index == 0 &amp;&amp; NrOfCommands != 0) | First command and NOT only 1 command
+<ul>
+<li>Close STDOUT</li>
+<li>DUP STDOUT+Pipe-index+1 -Write-&gt; STDOUT</li>
+<li>Close STDOUT+Pipe-index+1</li>
+</ul></li>
+<li>else if(Pipe-index == 1 &amp;&amp; NrOfCommands != 0) | Last command and NOT only 1 command
+<ul>
+<li>Close STDIN</li>
+<li>DUP STOUT+Pipe-index -Read-&gt; STDIN</li>
+<li>Close STDOUT+Pipe-index</li>
+</ul></li>
+<li>else if(NrOfCommands != 0)| Middle commands and NOT only 1 command
+<ul>
+<li>Close STDOUT</li>
+<li>DUP STDOUT+Pipe-index+1 -Write-&gt; STDOUT</li>
+<li>Close STDOUT+Pipe-index+1</li>
+<li>Close STDIN</li>
+<li>DUP STOUT+Pipe-index -Read-&gt; STDIN</li>
+<li>Close STDOUT+Pipe-index</li>
+</ul></li>
+<li>If there is redirects ( &gt; &lt; ) etc
+<ul>
+<li>Override STDOUT/STDIN with redirect</li>
+</ul></li>
+<li>Execv (command) | Child will end here</li>
+</ul></li>
+<li>Pipe-index ++ | Parent will run this</li>
+</ul></li>
+<li>Wait for CHILDS | PARENT</li>
+</ul></li>
+</ul>
+</body>
+</html>

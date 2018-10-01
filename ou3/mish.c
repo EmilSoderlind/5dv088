@@ -193,7 +193,7 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
             perror("execvp-ERROR: ");
             fprintf(stderr, "execvp() error | Could not execute program. (%s) Try again.\n", com.argv[0]);
             
-            // Close all filedesc
+            // It have fucked up --> Close all filedesc
             for(int i = 0; i<nrOfCommands-1;i++){
                 close(pipeArray[i][READ_END]);
                 close(pipeArray[i][WRITE_END]);
