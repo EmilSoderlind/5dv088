@@ -47,15 +47,28 @@ int dupPipe(int pip[2], int end, int destfd, command com){
  * Returns:	-1 on error, else destfd
  */
 int redirect(char *filename, int flags, int destfd){
-
-    // TO BE WRITTEN
-
+    printf("Redirecting to/from file\n");
     
+    int fileDesc;
 
+    if ((fileDesc = open(filename, flags, S_IRUSR | S_IWUSR)) != 0){
+        fprintf(stderr,"Could not open file\n");
+        return -1;
+    }
 
-    printf("Redirect %s - %d - %d\n",filename,flags,destfd);
+    if (close(destfd) == -1){
+        return -1;
+    }
+
+    int duplicatedFileDesc = dup(fileDesc);
+
+    if (duplicatedFileDesc == -1){
+        return duplicatedFileDesc;
+    }
+
+    if (close(fileDesc) == -1){
+        return -1;
+    }
 
     return destfd;
-
 }
-

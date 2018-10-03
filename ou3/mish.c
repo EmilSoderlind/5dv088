@@ -182,7 +182,17 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
         }
 
         // Skriv ut till fil osv redirect
-        
+
+        // First in chain - in-File redirect
+        if(com.infile != NULL){
+            redirect(com.infile, O_RDONLY, STDIN_FILENO);
+        }
+
+        // Last in chain - out-File redirect
+        if (com.outfile != NULL){
+            redirect(com.outfile, (O_WRONLY | O_CREAT | O_EXCL) , STDOUT_FILENO);
+        }
+
         // Excecv!
         dprintf(STDERR_FILENO, "Excecv INCOMING! %s\n", com.argv[0]);
 
@@ -219,6 +229,32 @@ int runShell(void){
         // ERROR
         fprintf(stderr, "Error in prompt!\n");
         return -1;
+    }
+
+    // Check for redirect in middle of chain (non start/end) --> Return 0;
+    for(int i = 1; i<NrOfCommands-1;i++){
+
+        if(comLine[i].infile != NULL){
+            printf("infile-Redirect in command #%d\n", i);
+            return 0;
+        }
+        if (comLine[i].outfile != NULL){
+            printf("outfile-Redirect in command #%d\n", i);
+            return 0;
+        }
+    }
+
+    // Check for outfile redirect first in chain.
+    if (comLine[0].outfile != NULL)
+    {
+        printf("First command have outfile-Redirect!\n");
+        return 0;
+    }
+
+    // Check for infile redirect last in chain.
+    if (comLine[NrOfCommands].infile != NULL){
+        printf("Last command have infile-Redirect!\n");
+        return 0;
     }
 
     // Internal commands
@@ -304,6 +340,7 @@ int runShell(void){
             }
             fprintf(stderr, "--\n");
         }
+    
     }else{
         // REMOVE LATER JUST DEBUG
         fprintf(stderr, "PID(%d) DONE\n", PROCESS_PID);
