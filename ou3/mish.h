@@ -20,7 +20,6 @@
 
 static unsigned int NR_OF_CHILDREN = 0;
 static int PID_CHILDREN_ARRAY[MAXCOMMANDS];
-static int PROCESS_PID = 1337;
 
 #define STRCMP(a, R, b) strcmp(a, b) R 0
 
