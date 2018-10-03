@@ -246,17 +246,23 @@ int runShell(void){
         }
     }
 
-    // Check for outfile redirect first in chain.
-    if (comLine[0].outfile != NULL)
-    {
-        printf("First command have outfile-Redirect!\n");
-        return 0;
-    }
+    if (NrOfCommands > 2){
 
-    // Check for infile redirect last in chain.
-    if (comLine[NrOfCommands].infile != NULL){
-        printf("Last command have infile-Redirect!\n");
-        return 0;
+        // Check for outfile redirect first in chain.
+        if (comLine[0].infile)
+        {
+            printf("First command have infile-Redirect!\n");
+            redirect(comLine[0].infile,1,STDIN_FILENO);
+            return 0;
+        }
+
+        // Check for infile redirect last in chain.
+        if (comLine[NrOfCommands].outfile){
+            printf("Last command have outfile-Redirect!\n");
+            redirect(comLine[NrOfCommands].outfile, 1, STDOUT_FILENO);
+            return 0;
+        }
+
     }
 
     // Internal commands
