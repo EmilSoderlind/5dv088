@@ -1,6 +1,8 @@
 
 #include "mish.h"
 
+static int PROCESS_PID = 1337;
+
 int internal_echo(int argc, char *argv[]){
 
     for (int i = 1; i<argc; i++){
