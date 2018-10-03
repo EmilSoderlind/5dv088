@@ -50,6 +50,8 @@ int redirect(char *filename, int flags, int destfd){
 
     // TO BE WRITTEN
 
+    
+
 
     printf("Redirect %s - %d - %d\n",filename,flags,destfd);
 

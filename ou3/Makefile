@@ -4,17 +4,20 @@ CFLAGS= -std=gnu11 -Wall -Wextra -Werror -Wmissing-declarations -Wmissing-protot
 
 all: mish
 
-mish: parser.o mish.o execute.o
-	$(CC) $(CFLAGS) parser.o mish.o execute.o -o mish
+mish: parser.o mish.o execute.o sighant.o
+	$(CC) $(CFLAGS) parser.o mish.o execute.o sighant.o -o mish
 
-mish.o: mish.c mish.h
-	$(CC) $(CFLAGS) mish.c -c
+sighant.o: sighant.c sighant.h
+	$(CC) $(CFLAGS) sighant.c -c
 
 execute.o: execute.c execute.h
 	$(CC) $(CFLAGS) -c execute.c
 
 parser.o: parser.c parser.h
 	$(CC) $(CFLAGS) -c parser.c
+
+mish.o: mish.c mish.h
+	$(CC) $(CFLAGS) mish.c -c
 
 valgrind: mish
 	valgrind --leak-check=yes --show-reachable=yes ./mish 

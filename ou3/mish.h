@@ -1,3 +1,8 @@
+
+// Prevent double inport
+#ifndef mish
+#define mish
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,11 +10,17 @@
 #include <fcntl.h>
 #include <stdbool.h>
 
+#include <signal.h>
+
 #include <unistd.h>
 #include <sys/wait.h>
 
 #include "execute.h"
-#include "parser.h"
+#include "sighant.h"
+
+static unsigned int NR_OF_CHILDREN = 0;
+static int PID_CHILDREN_ARRAY[MAXCOMMANDS];
+static int PROCESS_PID = 1337;
 
 #define STRCMP(a, R, b) strcmp(a, b) R 0
 
@@ -25,6 +36,10 @@ int runCommand(command com, int pipeIndex, int nrOfCommands, int pipeArray[][2])
 
 int runShell(void);
 
+int loopRunShell(void);
+
 int main(void);
 
 void print_command(command com);
+
+#endif

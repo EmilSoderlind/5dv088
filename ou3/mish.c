@@ -1,11 +1,6 @@
 
 #include "mish.h"
 
-static unsigned int NR_OF_CHILDREN = 0;
-static int PID_CHILDREN_ARRAY[MAXCOMMANDS];
-static int PROCESS_PID = 1337;
-
-
 int internal_echo(int argc, char *argv[]){
 
     for (int i = 1; i<argc; i++){
@@ -76,8 +71,9 @@ int prompt(command commandArr[], int* NrOfCommands){
 
     if (fgets(promptLine, MAXWORDS, stdin) == NULL){
         // ERROR
-        fprintf(stderr, "ERROR!");
+        fprintf(stderr, "fgets==NULL - error");
         puts(promptLine);
+        catchSignal(SIGUSR1);
         return -1;
     }
 
@@ -86,7 +82,8 @@ int prompt(command commandArr[], int* NrOfCommands){
     if (strlen(promptLine) == 1)
     {
         // NO INPUT
-        return -1;
+        printf("No input\n");
+        return 0;
     }
 
     *NrOfCommands = parse(promptLine, commandArr);
@@ -297,10 +294,6 @@ int runShell(void){
             fprintf(stderr, "(%d) is dead ->NR_OF_CHILDREN: %d\n", PID_CHILDREN_ARRAY[i], NR_OF_CHILDREN);
             fprintf(stderr, "Parent says: Child exited with status %d \n", status);
             
-            //printf("WEXITSTATUS: %d\n", WEXITSTATUS(status));
-            //printf("WIFEXITED: %d\n", WIFEXITED(status));
-            //printf("WIFSIGNALED: %d\n", WIFSIGNALED(status));
-            //printf("WIFSTOPPED: %d\n", WIFSTOPPED(status));
             PID_CHILDREN_ARRAY[i] = 0;
 
             fprintf(stderr, "--\n");
@@ -322,20 +315,30 @@ int runShell(void){
     return 0;
 }
 
+int loopRunShell(void){
 
-int main(void) {
+    if (signal(SIGINT, catchSignal) == SIG_ERR){
+        fprintf(stderr, "Couldn't register signal handler\n");
+        exit(1);
+    }
 
-    bool loopCond = true;
-
-    while(loopCond){
-        fprintf(stderr, "Running MISH!\n");
-
+    while (true)
+    {
         if (runShell() != 0)
         {
             fprintf(stderr, "Error in runShell()\n");
-            //break;
+            perror("e --> ");
+            return -1;
         }
     }
+}
 
-    return 0;
+int main(void) {
+
+    if (loopRunShell() == 0){
+        return 0;
+    }else{
+        return -1;
+    }
+
 }
