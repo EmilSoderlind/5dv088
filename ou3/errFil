@@ -1,0 +1,391 @@
+strlen(promptLine): 3
+Straight out of parse
+{
+  Argv: ["ls"]
+  Argc: 1
+  Infile: (null)
+  Outfile: (null)
+}
+Fork(23451)->NR_OF_CHILDREN: 1
+Parent starts to wait for (1 childs):
+--
+PID_arr: 
+0 | 23451
+--
+wait for PID:23451
+command-> (ls)
+Only 1 command!
+Excecv INCOMING! ls
+(23451) is dead ->NR_OF_CHILDREN: 1
+Parent says: Child exited with status 0 
+--
+PID_arr: 
+0 | 0
+--
+Parent done with runShell()
+strlen(promptLine): 4
+Straight out of parse
+{
+  Argv: ["pwd"]
+  Argc: 1
+  Infile: (null)
+  Outfile: (null)
+}
+Fork(23453)->NR_OF_CHILDREN: 1
+Parent starts to wait for (1 childs):
+--
+PID_arr: 
+0 | 23453
+--
+wait for PID:23453
+command-> (pwd)
+Only 1 command!
+Excecv INCOMING! pwd
+(23453) is dead ->NR_OF_CHILDREN: 1
+Parent says: Child exited with status 0 
+--
+PID_arr: 
+0 | 0
+--
+Parent done with runShell()
+strlen(promptLine): 8
+Straight out of parse
+{
+  Argv: ["sleep", "2"]
+  Argc: 2
+  Infile: (null)
+  Outfile: (null)
+}
+Fork(23454)->NR_OF_CHILDREN: 1
+Parent starts to wait for (1 childs):
+--
+PID_arr: 
+0 | 23454
+--
+wait for PID:23454
+command-> (sleep)
+Only 1 command!
+Excecv INCOMING! sleep
+(23454) is dead ->NR_OF_CHILDREN: 1
+Parent says: Child exited with status 0 
+--
+PID_arr: 
+0 | 0
+--
+Parent done with runShell()
+Recieved signal 2!
+strlen(promptLine): 3
+Straight out of parse
+{
+  Argv: ["ls"]
+  Argc: 1
+  Infile: (null)
+  Outfile: (null)
+}
+Fork(23455)->NR_OF_CHILDREN: 1
+Parent starts to wait for (1 childs):
+--
+PID_arr: 
+0 | 23455
+--
+wait for PID:23455
+command-> (ls)
+Only 1 command!
+Excecv INCOMING! ls
+(23455) is dead ->NR_OF_CHILDREN: 1
+Parent says: Child exited with status 0 
+--
+PID_arr: 
+0 | 0
+--
+Parent done with runShell()
+strlen(promptLine): 27
+Straight out of parse
+{
+  Argv: ["cat", "hiFile.txt"]
+  Argc: 2
+  Infile: (null)
+  Outfile: (null)
+}
+Straight out of parse
+{
+  Argv: ["tail"]
+  Argc: 1
+  Infile: (null)
+  Outfile: (null)
+}
+Straight out of parse
+{
+  Argv: ["wc"]
+  Argc: 1
+  Infile: (null)
+  Outfile: (null)
+}
+Creating pipe: 3:4
+Creating pipe: 5:6
+Fork(23456)->NR_OF_CHILDREN: 1
+Fork(23457)->NR_OF_CHILDREN: 2
+command-> (cat)
+comInxex: 0/3 | First in chain!
+cat closing 1
+cat dup 4
+cat closing 4
+cat closing 3
+cat closing pipe:5:6
+Fork(23458)->NR_OF_CHILDREN: 3
+Excecv INCOMING! cat
+Parent closing pipe:3:4
+Parent closing pipe:5:6
+Parent starts to wait for (3 childs):
+command-> (tail)
+comInxex: 1/3 | Middle of chain!
+tail closing 0
+--
+PID_arr: 
+0 | 23456
+1 | 23457
+2 | 23458
+--
+wait for PID:23456
+command-> (wc)
+comInxex: 2/3 | Last in chain!
+tail dup 3
+wc closing 0
+tail closing 3
+tail closing 4
+tail closing 1
+tail dup 6
+tail closing 6
+wc dup 5
+tail closing 5
+wc closing 5
+Excecv INCOMING! tail
+wc closing 6
+wc closing pipe:3:4
+Excecv INCOMING! wc
+(23456) is dead ->NR_OF_CHILDREN: 3
+Parent says: Child exited with status 0 
+--
+PID_arr: 
+0 | 0
+1 | 23457
+2 | 23458
+--
+wait for PID:23457
+(23457) is dead ->NR_OF_CHILDREN: 3
+Parent says: Child exited with status 0 
+--
+PID_arr: 
+0 | 0
+1 | 0
+2 | 23458
+--
+wait for PID:23458
+(23458) is dead ->NR_OF_CHILDREN: 3
+Parent says: Child exited with status 0 
+--
+PID_arr: 
+0 | 0
+1 | 0
+2 | 0
+--
+Parent done with runShell()
+strlen(promptLine): 32
+Straight out of parse
+{
+  Argv: ["cat", "hiFile.txt"]
+  Argc: 2
+  Infile: (null)
+  Outfile: (null)
+}
+Straight out of parse
+{
+  Argv: ["tail"]
+  Argc: 1
+  Infile: (null)
+  Outfile: (null)
+}
+Straight out of parse
+{
+  Argv: ["sleep", "1"]
+  Argc: 2
+  Infile: (null)
+  Outfile: (null)
+}
+Creating pipe: 3:4
+Creating pipe: 5:6
+Fork(23459)->NR_OF_CHILDREN: 1
+Fork(23460)->NR_OF_CHILDREN: 2
+command-> (cat)
+comInxex: 0/3 | First in chain!
+cat closing 1
+cat dup 4
+cat closing 4
+cat closing 3
+cat closing pipe:5:6
+Excecv INCOMING! cat
+command-> (tail)
+comInxex: 1/3 | Middle of chain!
+tail closing 0
+tail dup 3
+Fork(23461)->NR_OF_CHILDREN: 3
+Parent closing pipe:3:4
+tail closing 3
+tail closing 4
+Parent closing pipe:5:6
+command-> (sleep)
+tail closing 1
+comInxex: 2/3 | Last in chain!
+tail dup 6
+tail closing 6
+Parent starts to wait for (3 childs):
+tail closing 5
+sleep closing 0
+Excecv INCOMING! tail
+sleep dup 5
+--
+PID_arr: 
+sleep closing 5
+0 | 23459
+1 | 23460
+2 | 23461
+--
+sleep closing 6
+sleep closing pipe:3:4
+Excecv INCOMING! sleep
+wait for PID:23459
+(23459) is dead ->NR_OF_CHILDREN: 3
+Parent says: Child exited with status 0 
+--
+PID_arr: 
+0 | 0
+1 | 23460
+2 | 23461
+--
+wait for PID:23460
+(23460) is dead ->NR_OF_CHILDREN: 3
+Parent says: Child exited with status 0 
+--
+PID_arr: 
+0 | 0
+1 | 0
+2 | 23461
+--
+wait for PID:23461
+(23461) is dead ->NR_OF_CHILDREN: 3
+Parent says: Child exited with status 0 
+--
+PID_arr: 
+0 | 0
+1 | 0
+2 | 0
+--
+Parent done with runShell()
+strlen(promptLine): 28
+Straight out of parse
+{
+  Argv: ["cat", "hiFile.txt"]
+  Argc: 2
+  Infile: (null)
+  Outfile: (null)
+}
+Straight out of parse
+{
+  Argv: ["tail"]
+  Argc: 1
+  Infile: (null)
+  Outfile: fil
+}
+Creating pipe: 3:4
+Fork(23462)->NR_OF_CHILDREN: 1
+Fork(23463)->NR_OF_CHILDREN: 2
+Parent closing pipe:3:4
+Parent starts to wait for (2 childs):
+--
+PID_arr: 
+0 | 23462
+command-> (cat)
+1 | 23463
+--
+comInxex: 0/2 | First in chain!
+cat closing 1
+wait for PID:23462
+cat dup 4
+command-> (tail)
+comInxex: 1/2 | Last in chain!
+tail closing 0
+cat closing 4
+tail dup 3
+cat closing 3
+Excecv INCOMING! cat
+tail closing 3
+tail closing 4
+(23462) is dead ->NR_OF_CHILDREN: 2
+Parent says: Child exited with status 0 
+--
+PID_arr: 
+0 | 0
+1 | 23463
+--
+wait for PID:23463
+Could not open file
+Excecv INCOMING! tail
+(23463) is dead ->NR_OF_CHILDREN: 2
+Parent says: Child exited with status 0 
+--
+PID_arr: 
+0 | 0
+1 | 0
+--
+Parent done with runShell()
+strlen(promptLine): 3
+Straight out of parse
+{
+  Argv: ["ls"]
+  Argc: 1
+  Infile: (null)
+  Outfile: (null)
+}
+Fork(23464)->NR_OF_CHILDREN: 1
+Parent starts to wait for (1 childs):
+--
+PID_arr: 
+0 | 23464
+--
+wait for PID:23464
+command-> (ls)
+Only 1 command!
+Excecv INCOMING! ls
+(23464) is dead ->NR_OF_CHILDREN: 1
+Parent says: Child exited with status 0 
+--
+PID_arr: 
+0 | 0
+--
+Parent done with runShell()
+strlen(promptLine): 8
+Straight out of parse
+{
+  Argv: ["cat", "fil"]
+  Argc: 2
+  Infile: (null)
+  Outfile: (null)
+}
+Fork(23465)->NR_OF_CHILDREN: 1
+Parent starts to wait for (1 childs):
+--
+PID_arr: 
+0 | 23465
+--
+wait for PID:23465
+command-> (cat)
+Only 1 command!
+Excecv INCOMING! cat
+(23465) is dead ->NR_OF_CHILDREN: 1
+Parent says: Child exited with status 0 
+--
+PID_arr: 
+0 | 0
+--
+Parent done with runShell()
+fgets==NULL - error

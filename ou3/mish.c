@@ -186,13 +186,13 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
         // Skriv ut till fil osv redirect
 
         // First in chain - in-File redirect
-        if(com.infile != NULL){
+        if(com.infile){
             redirect(com.infile, O_RDONLY, STDIN_FILENO);
         }
 
         // Last in chain - out-File redirect
-        if (com.outfile != NULL){
-            redirect(com.outfile, (O_WRONLY | O_CREAT | O_EXCL) , STDOUT_FILENO);
+        if (com.outfile){
+            redirect(com.outfile, ( O_WRONLY | O_EXCL | O_CREAT ) , STDOUT_FILENO);
         }
 
         // Excecv!
@@ -233,14 +233,21 @@ int runShell(void){
         return -1;
     }
 
-    // Check for redirect in middle of chain (non start/end) --> Return 0;
-    for(int i = 1; i<NrOfCommands-1;i++){
+    // If prompt got nothin g, return 0 and try again.
+    if (NrOfCommands == 0){
+        printf("Prompt got nothing!\n");
+        return 0;
+    }
 
-        if(comLine[i].infile != NULL){
+    // Check for redirect in middle of chain (non start/end) --> Return 0;
+    for (int i = 1; i < NrOfCommands - 1; i++){
+
+        if (comLine[i].infile != NULL){
             printf("infile-Redirect in command #%d\n", i);
             return 0;
         }
-        if (comLine[i].outfile != NULL){
+        if (comLine[i].outfile != NULL)
+        {
             printf("outfile-Redirect in command #%d\n", i);
             return 0;
         }

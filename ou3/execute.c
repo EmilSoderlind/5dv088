@@ -51,22 +51,29 @@ int redirect(char *filename, int flags, int destfd){
     
     int fileDesc;
 
-    if ((fileDesc = open(filename, flags, S_IRUSR | S_IWUSR)) != 0){
+    printf("redirect got -> %s %d %d\n",filename,flags,destfd);
+
+    if ((fileDesc = open(filename, O_WRONLY | O_EXCL | O_CREAT , 0644)) != 0)
+    {
         fprintf(stderr,"Could not open file\n");
+        perror("Error in open: ");
         return -1;
     }
 
     if (close(destfd) == -1){
+        fprintf(stderr, "Could close fileDesc:%d\n",destfd);
         return -1;
     }
 
     int duplicatedFileDesc = dup(fileDesc);
 
     if (duplicatedFileDesc == -1){
+        fprintf(stderr, "Could dup fileDesc:%d\n", fileDesc);
         return duplicatedFileDesc;
     }
 
     if (close(fileDesc) == -1){
+        fprintf(stderr, "Could close fileDesc:%d\n", fileDesc);
         return -1;
     }
 

@@ -1,17 +1,15 @@
 
 #include "sighant.h"
 
-void catchSignal(int theSignal)
-{
-    if (theSignal == SIGINT)
-    {
+void catchSignal(int theSignal){
+    if (theSignal == SIGINT){
 
         fprintf(stderr, "Recieved signal %d!\n", theSignal);
 
         // Kill children
         for (int i = 0; i < (int)NR_OF_CHILDREN; i++){
             fprintf(stderr, "Killing child %d (%d)\n", i, PID_CHILDREN_ARRAY[i]);
-
+            
             if (kill(PID_CHILDREN_ARRAY[i], SIGINT) < 0){
                 fprintf(stderr, "Error killing child!\n");
             }
