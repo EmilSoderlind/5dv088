@@ -156,7 +156,6 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
                 close(STDERR_FILENO);
                 close(STDOUT_FILENO);
             }
-            
             exit(-1); // Kill child
         }
     }
