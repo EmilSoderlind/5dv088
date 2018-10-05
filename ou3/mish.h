@@ -37,6 +37,8 @@ int runShell(void);
 
 int loopRunShell(void);
 
+int killChildren(int sig);
+
 int main(void);
 
 void print_command(command com);

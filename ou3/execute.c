@@ -53,12 +53,13 @@ int redirect(char *filename, int flags, int destfd){
 
     printf("redirect got -> %s %d %d\n",filename,flags,destfd);
 
-    if ((fileDesc = open(filename, O_WRONLY | O_EXCL | O_CREAT , 0644)) != 0)
-    {
+    if ((fileDesc = open(filename, flags , 0644)) < 0){
         fprintf(stderr,"Could not open file\n");
         perror("Error in open: ");
         return -1;
     }
+
+    printf("open gave %d\n", fileDesc);
 
     if (close(destfd) == -1){
         fprintf(stderr, "Could close fileDesc:%d\n",destfd);

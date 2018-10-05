@@ -75,7 +75,11 @@ int prompt(command commandArr[], int* NrOfCommands){
         // ERROR
         fprintf(stderr, "fgets==NULL - error");
         puts(promptLine);
-        catchSignal(SIGUSR1);
+        
+        fprintf(stdout, "[Mish-process completed]\n");
+
+        exit(0);
+
         return -1;
     }
 
@@ -256,8 +260,7 @@ int runShell(void){
     if (NrOfCommands > 2){
 
         // Check for outfile redirect first in chain.
-        if (comLine[0].infile)
-        {
+        if (comLine[0].infile){
             printf("First command have infile-Redirect!\n");
             redirect(comLine[0].infile,1,STDIN_FILENO);
             return 0;
@@ -273,8 +276,7 @@ int runShell(void){
     }
 
     // Internal commands
-    if (STRCMP(comLine[0].argv[0], ==, "echo") || STRCMP(comLine[0].argv[0], ==, "cd"))
-    {
+    if (STRCMP(comLine[0].argv[0], ==, "echo") || STRCMP(comLine[0].argv[0], ==, "cd")){
         fprintf(stderr, "Found internal command\n");
         if (STRCMP(comLine[0].argv[0], ==, "cd"))
         {
@@ -323,19 +325,20 @@ int runShell(void){
         }
     }
 
-    if (PROCESS_PID != 0) // PARENT WAIT
+    if(PROCESS_PID != 0) // PARENT WAIT
     {
+
         fprintf(stderr, "Parent starts to wait for (%d childs):\n", NR_OF_CHILDREN);
         fprintf(stderr, "--\n");
         fprintf(stderr, "PID_arr: \n");
-        for (int h = 0; h < (int)NR_OF_CHILDREN; h++)
-        {
+        
+        for (int h = 0; h < (int)NR_OF_CHILDREN; h++){
             fprintf(stderr, "%d | %d\n", h, PID_CHILDREN_ARRAY[h]);
         }
+        
         fprintf(stderr, "--\n");
 
-        for (int i = 0; i < (int)NR_OF_CHILDREN; i++)
-        {
+        for (int i = 0; i < (int)NR_OF_CHILDREN; i++){
             int status;
 
             fprintf(stderr, "wait for PID:%d\n", PID_CHILDREN_ARRAY[i]);
@@ -369,7 +372,7 @@ int runShell(void){
 
 int loopRunShell(void){
 
-    if (signal(SIGINT, catchSignal) == SIG_ERR){
+    if (signalHand(SIGINT, catchSignal) == SIG_ERR){
         fprintf(stderr, "Couldn't register signal handler\n");
         exit(1);
     }
@@ -383,6 +386,27 @@ int loopRunShell(void){
             return -1;
         }
     }
+
+    return 0;
+}
+
+int killChildren(int sig)
+{
+    // Kill children
+    for (int i = 0; i < (int)NR_OF_CHILDREN; i++)
+    {
+        fprintf(stderr, "Killing child %d (%d)\n", i, PID_CHILDREN_ARRAY[i]);
+
+        if (kill(PID_CHILDREN_ARRAY[i], sig) < 0)
+        {
+            fprintf(stderr, "Error killing child!\n");
+            return -1;
+        }
+    }
+
+    NR_OF_CHILDREN = 0;
+
+    return 0;
 }
 
 int main(void) {
@@ -392,5 +416,5 @@ int main(void) {
     }else{
         return -1;
     }
-
+    return 0;
 }
