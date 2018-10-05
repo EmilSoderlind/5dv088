@@ -41,7 +41,7 @@
  *		destfd	the standard I/O file descriptor to be replaced
  * Returns:	-1 on error, else destfd
  */
-int dupPipe(int pip[2], int end, int destfd, command com);
+int dupPipe(int pip[2], int end, int destfd);
 
 
 /* Redirect a standard I/O file descriptor to a file

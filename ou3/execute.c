@@ -15,21 +15,21 @@
 
 // REMOVE COMMAND-input LATER
 
-int dupPipe(int pip[2], int end, int destfd, command com){
+int dupPipe(int pip[2], int end, int destfd){
 
-    fprintf(stderr, "%s closing %d\n", com.argv[0], destfd);
+    //fprintf(stderr, "%s closing %d\n", com.argv[0], destfd);
     if (close(destfd) == -1){
         return -1;
     }
 
-    fprintf(stderr, "%s dup %d\n", com.argv[0], pip[end]);
+    //fprintf(stderr, "%s dup %d\n", com.argv[0], pip[end]);
     int duplicatedFileDesc = dup(pip[end]);
 
     if(duplicatedFileDesc == -1){
         return duplicatedFileDesc;
     }
 
-    fprintf(stderr, "%s closing %d\n", com.argv[0], pip[end]);
+    //fprintf(stderr, "%s closing %d\n", com.argv[0], pip[end]);
     if(close(pip[end]) == -1){
         return -1;
     }
@@ -47,19 +47,18 @@ int dupPipe(int pip[2], int end, int destfd, command com){
  * Returns:	-1 on error, else destfd
  */
 int redirect(char *filename, int flags, int destfd){
-    printf("Redirecting to/from file\n");
+    //printf("Redirecting to/from file\n");
     
     int fileDesc;
 
-    printf("redirect got -> %s %d %d\n",filename,flags,destfd);
+    //printf("redirect got -> %s %d %d\n",filename,flags,destfd);
 
     if ((fileDesc = open(filename, flags , 0644)) < 0){
-        fprintf(stderr,"Could not open file\n");
-        perror("Error in open: ");
+        perror("Could not open file: ");
         return -1;
     }
 
-    printf("open gave %d\n", fileDesc);
+    //printf("open gave %d\n", fileDesc);
 
     if (close(destfd) == -1){
         fprintf(stderr, "Could close fileDesc:%d\n",destfd);
