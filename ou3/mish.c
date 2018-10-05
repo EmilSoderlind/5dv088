@@ -372,7 +372,7 @@ int runShell(void){
 
 int loopRunShell(void){
 
-    if (signalHand(SIGINT, catchSignal) == SIG_ERR){
+    if (signalHand(SIGINT, killChildren) == SIG_ERR){
         fprintf(stderr, "Couldn't register signal handler\n");
         exit(1);
     }
@@ -390,7 +390,7 @@ int loopRunShell(void){
     return 0;
 }
 
-int killChildren(int sig)
+void killChildren(int sig)
 {
     // Kill children
     for (int i = 0; i < (int)NR_OF_CHILDREN; i++)
@@ -400,13 +400,12 @@ int killChildren(int sig)
         if (kill(PID_CHILDREN_ARRAY[i], sig) < 0)
         {
             fprintf(stderr, "Error killing child!\n");
-            return -1;
+            
         }
     }
 
     NR_OF_CHILDREN = 0;
 
-    return 0;
 }
 
 int main(void) {

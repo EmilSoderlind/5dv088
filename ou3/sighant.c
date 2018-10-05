@@ -8,7 +8,7 @@ void catchSignal(int theSignal)
 
         fprintf(stderr, "Recieved signal %d!\n", theSignal);
 
-        killChildren(theSignal);
+        //killChildren(theSignal);
 
         fflush(stderr);
 
@@ -18,7 +18,7 @@ void catchSignal(int theSignal)
         }
 
         fprintf(stderr, "Running loopRunShell\n");
-        loopRunShell();
+        //loopRunShell();
 
     }else{
         fprintf(stdout, "Recieved %d-sig\n",theSignal);
@@ -26,6 +26,11 @@ void catchSignal(int theSignal)
 
         exit(0);
     }
+}
+
+void emptyFunc(void){
+
+
 }
 
 Sigfunc *signalHand(int signo, Sigfunc *func)
