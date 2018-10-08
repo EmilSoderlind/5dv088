@@ -7,14 +7,14 @@ int internal_echo(int argc, char *argv[]){
 
     for (int i = 1; i<argc; i++){
         if(argc <= 2){
-            fprintf(stderr,"%s", argv[i]);
+            fprintf(stdout,"%s", argv[i]);
         }else{
-            fprintf(stderr,"%s ", argv[i]);
+            fprintf(stdout,"%s ", argv[i]);
         }
     }
-
-    fflush(stdout);
-    fputs("\n", stderr);
+    
+    //fflush(stdout);
+    fprintf(stdout, "\n");
 
     return 0;
 }
@@ -29,9 +29,9 @@ int internal_cd(char *argv[]){
         directory = argv[1];
     }
 
-    if (chdir(directory) != 0){
-        fprintf(stderr, "ERROR: Could not change directory");
-        return 1;
+    if (chdir(directory) < 0){
+        fprintf(stderr, "cd: %s: No such file or directory\n", argv[1]);
+        return -1;
     }
 
     return 0;
@@ -40,7 +40,8 @@ int internal_cd(char *argv[]){
 // Promt prompt, wait for input, parse input and fill CommandLine[] + NrOfCommands
 int prompt(command commandArr[], int* NrOfCommands){
 
-    printf("mish%% ");
+    fprintf(stderr, "mish%% ");
+    //printf("mish%% ");
     fflush(stderr);
 
     char promptLine[MAXWORDS];
@@ -133,7 +134,6 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
         }
 
         // Skriv ut till fil osv redirect
-
         // First in chain - in-File redirect
         if(com.infile){
             redirect(com.infile, O_RDONLY, STDIN_FILENO);
@@ -144,9 +144,9 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
             redirect(com.outfile, ( O_WRONLY | O_EXCL | O_CREAT ) , STDOUT_FILENO);
         }
 
-
         if (execvp(com.argv[0], com.argv) < 0){
-            perror("execvp-ERROR: ");
+            fprintf(stderr,"%s: ",com.argv[0]);
+            perror(" ");
             
             // It have fucked up --> Close all filedesc
             for(int i = 0; i<nrOfCommands-1;i++){
@@ -171,8 +171,7 @@ int runShell(void){
     PROCESS_PID = getpid();
 
     // Promt prompt, wait for input, parse input and fill CommandLine[] + NrOfCommands
-    if (prompt(comLine, &NrOfCommands) != 0)
-    {
+    if (prompt(comLine, &NrOfCommands) != 0){
         // ERROR
         fprintf(stderr, "Error in prompt!\n");
         return -1;
@@ -273,7 +272,6 @@ int runShell(void){
             PID_CHILDREN_ARRAY[i] = 0;
 
         }
-    
     }
 
     NR_OF_CHILDREN = 0;

@@ -54,7 +54,8 @@ int redirect(char *filename, int flags, int destfd){
     //printf("redirect got -> %s %d %d\n",filename,flags,destfd);
 
     if ((fileDesc = open(filename, flags , 0644)) < 0){
-        perror("Could not open file: ");
+        fprintf(stderr,"%s", filename);
+        perror(" ");
         return -1;
     }
 
