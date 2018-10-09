@@ -315,7 +315,8 @@ void killChildren(int sig)
             fprintf(stderr, "Error killing child!\n");
         }
     }
-    NR_OF_CHILDREN = 0;
+
+    //NR_OF_CHILDREN = 0;
 }
 
 int main(void) {
