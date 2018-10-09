@@ -300,6 +300,9 @@ int loopRunShell(void){
 
 void killChildren(int sig)
 {
+
+    printf("NR_OF_CHILDREN: %d\n", NR_OF_CHILDREN);
+    
     // Kill children
     for (int i = 0; i < (int)NR_OF_CHILDREN; i++)
     {   
