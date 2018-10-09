@@ -307,7 +307,7 @@ void killChildren(int sig)
     for (int i = 0; i < (int)NR_OF_CHILDREN; i++)
     {   
         sig++;
-        fprintf(stderr, "Killing PID:%d\n", PID_CHILDREN_ARRAY[i]);
+        fprintf(stderr, "Killing PID[%d]:%d\n", i, PID_CHILDREN_ARRAY[i]);
         if (kill(PID_CHILDREN_ARRAY[i], SIGKILL) < 0)
         {
             fprintf(stderr, "Error killing child!\n");
