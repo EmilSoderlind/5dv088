@@ -298,21 +298,18 @@ int loopRunShell(void){
     return 0;
 }
 
-void killChildren(int sig)
+void killChildren()
 {
     // Kill children
     for (int i = 0; i < (int)NR_OF_CHILDREN; i++)
     {
-
-        if (kill(PID_CHILDREN_ARRAY[i], sig) < 0)
+        if (kill(PID_CHILDREN_ARRAY[i], SIGKILL) < 0)
         {
             fprintf(stderr, "Error killing child!\n");
-            
         }
     }
 
     NR_OF_CHILDREN = 0;
-
 }
 
 int main(void) {

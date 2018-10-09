@@ -11,10 +11,6 @@
  *		destfd	the standard I/O file descriptor to be replaced
  * Returns:	-1 on error, else destfd
  */
-
-
-// REMOVE COMMAND-input LATER
-
 int dupPipe(int pip[2], int end, int destfd){
 
     //fprintf(stderr, "%s closing %d\n", com.argv[0], destfd);
