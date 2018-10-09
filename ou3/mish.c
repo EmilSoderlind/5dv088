@@ -267,6 +267,8 @@ int runShell(void){
         for (int i = 0; i < (int)NR_OF_CHILDREN; i++){
             int status;
 
+            printf("Waiting for pid:%d\n", PID_CHILDREN_ARRAY[i]);
+
             fflush(stderr);
             waitpid(PID_CHILDREN_ARRAY[i], &status, 0);
             PID_CHILDREN_ARRAY[i] = 0;
