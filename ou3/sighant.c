@@ -1,6 +1,11 @@
 
 #include "sighant.h"
 
+/* Signal handler
+ * Arguments:	
+ *      signo       Signal to be handled
+ *		func        function to be called on signal
+ */
 Sigfunc *signalHand(int signo, Sigfunc *func)
 {
     struct sigaction act, oact;

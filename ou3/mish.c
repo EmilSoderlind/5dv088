@@ -3,6 +3,12 @@
 
 int PROCESS_PID = 1337;
 
+/* wWrites its arguments to standard output.
+ * Arguments:	
+ *      argc        Number of arguments in argv
+ *		argv        Argument array
+ *      Returns:    -1 on error, else 0
+ */
 int internal_echo(int argc, char *argv[]){
 
     for (int i = 1; i<argc; i++){
@@ -15,6 +21,11 @@ int internal_echo(int argc, char *argv[]){
     return 0;
 }
 
+/* Change working directory
+ * Arguments:	
+ *		argv        Argument array
+ *      Returns:    -1 on error, else 0
+ */
 int internal_cd(char *argv[]){
 
     char *directory = "";
@@ -33,7 +44,12 @@ int internal_cd(char *argv[]){
     return 0;
 }
 
-// Promt prompt, wait for input, parse input and fill CommandLine[] + NrOfCommands
+/* Prompt the user, wait for input, parse input and fill commandArr + NrOfCommands
+ * Arguments:	
+ *      commandArr      Command array to be filed
+ *		NrOfCommands    To be filled with NrOfCommands from user
+ *      Returns:    -1 on error, else 0
+ */
 int prompt(command commandArr[], int* NrOfCommands){
 
     fprintf(stderr, "mish%% ");
@@ -45,10 +61,7 @@ int prompt(command commandArr[], int* NrOfCommands){
     if (fgets(promptLine, MAXWORDS, stdin) == NULL){
         // ERROR
         puts(promptLine);
-        
         exit(0);
-
-        return -1;
     }
 
     if (strlen(promptLine) == 1){
@@ -56,10 +69,18 @@ int prompt(command commandArr[], int* NrOfCommands){
     }
 
     *NrOfCommands = parse(promptLine, commandArr);
-
     return 0;
 }
 
+/* Fork and dupPipe/close pipes (from pipeArray) depending on commandIndex & nrOfCommands
+ * Check if redirect from/to file exist and finally excecvp commands arguments.
+ *  Arguments: 
+ *  com             Command to execute
+ *  commandIndex    Where in command-chain the command is
+ *  nrOfCommands    Length of command-chain
+ *  pipeArray       Array of pipes to be used/closed
+ *      Returns:    -1 on error, else 0
+ */
 int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][2]){
 
     //print_command(com);
@@ -127,7 +148,6 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
             }
         }
 
-        // Skriv ut till fil osv redirect
         // First in chain - in-File redirect
         if(com.infile){
             redirect(com.infile, O_RDONLY, STDIN_FILENO);
@@ -138,6 +158,7 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
             redirect(com.outfile, ( O_WRONLY | O_EXCL | O_CREAT ) , STDOUT_FILENO);
         }
 
+        // Execute command
         if (execvp(com.argv[0], com.argv) < 0){
             fprintf(stderr,"%s: ",com.argv[0]);
             perror(" ");
@@ -145,17 +166,22 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
             // It have fucked up --> Close all filedesc
             for(int i = 0; i<nrOfCommands-1;i++){
                 close(pipeArray[i][READ_END]);
-                close(pipeArray[i][WRITE_END]);
-                close(STDIN_FILENO);
-                close(STDERR_FILENO);
-                close(STDOUT_FILENO);
+                close(pipeArray[i][WRITE_END]); 
             }
+            close(STDIN_FILENO);
+            close(STDERR_FILENO);
+            close(STDOUT_FILENO);
             exit(-1); // Kill child
         }
     }
     return 0;
 }
 
+/* Call prompt, get commandChain + commandChain length (NrOfComamnds)
+ * If internal commands, call internal_cd/echo, otherwise create pipes 
+ * and run all external commands via runCommand. In parent close unused pipes and wait for children
+ *      Returns:    -1 on error, else 0
+ */
 int runShell(void){
 
     command comLine[MAX_COMMANDS + 1];
@@ -253,6 +279,9 @@ int runShell(void){
     return 0;
 }
 
+/* Declare signal handler and call runShell until error
+ *      Returns:    -1 on error, else 0
+ */
 int loopRunShell(void){
 
     if (signalHand(SIGINT, killChildren) == SIG_ERR){
@@ -273,6 +302,7 @@ int loopRunShell(void){
     return 0;
 }
 
+/* Loop throuhg children process-ID:s and send kill-signal */
 void killChildren(int sig)
 {    
     // Kill children
@@ -285,9 +315,11 @@ void killChildren(int sig)
         }
     }
 
-    //NR_OF_CHILDREN = 0;
 }
 
+/* Run minimal shell
+ *  Returns:    -1 on error, else 0
+ */
 int main(void) {
 
     if (loopRunShell() == 0){
