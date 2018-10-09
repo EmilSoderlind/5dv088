@@ -282,7 +282,7 @@ int loopRunShell(void){
 
     if (signalHand(SIGINT, killChildren) == SIG_ERR){
         fprintf(stderr, "Couldn't register signal handler\n");
-        exit(1);
+        exit(-1);
     }
 
     while (true)

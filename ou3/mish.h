@@ -23,7 +23,7 @@ static int PID_CHILDREN_ARRAY[MAXCOMMANDS];
 
 #define STRCMP(a, R, b) strcmp(a, b) R 0
 
-static const unsigned int MAX_COMMANDS = 20;
+static const unsigned int MAX_COMMANDS = 200;
 
 int internal_echo(int argc, char *argv[]);
 
