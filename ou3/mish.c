@@ -6,16 +6,12 @@ int PROCESS_PID = 1337;
 int internal_echo(int argc, char *argv[]){
 
     for (int i = 1; i<argc; i++){
-        if(argc <= 2){
-            fprintf(stdout,"%s", argv[i]);
-        }else{
+        if (i != argc - 1){
             fprintf(stdout,"%s ", argv[i]);
+        }else{
+            fprintf(stdout, "%s\n", argv[i]);
         }
     }
-    
-    //fflush(stdout);
-    fprintf(stdout, "\n");
-
     return 0;
 }
 
@@ -41,7 +37,6 @@ int internal_cd(char *argv[]){
 int prompt(command commandArr[], int* NrOfCommands){
 
     fprintf(stderr, "mish%% ");
-    //printf("mish%% ");
     fflush(stderr);
 
     char promptLine[MAXWORDS];
@@ -78,7 +73,6 @@ int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][
     }
 
     if (tempPID != 0){ // Parent <- Save childrens PID
-        printf("PID_CHILDREN_ARRAY[%d] = %d \n", NR_OF_CHILDREN, tempPID);
         PID_CHILDREN_ARRAY[NR_OF_CHILDREN] = tempPID;
         NR_OF_CHILDREN++;
     }else{ // Children <- Set childrens PROCESS_PID
@@ -196,25 +190,6 @@ int runShell(void){
         }
     }
 
-/*
-    if (NrOfCommands > 2){
-
-        // Check for outfile redirect first in chain.
-        if (comLine[0].infile){
-            printf("First command have infile-Redirect!\n");
-            redirect(comLine[0].infile,1,STDIN_FILENO);
-            return 0;
-        }
-
-        // Check for infile redirect last in chain.
-        if (comLine[NrOfCommands].outfile){
-            fprintf(stderr, "Last command have outfile-Redirect!\n");
-            printf("Last command have outfile-Redirect!\n");
-            redirect(comLine[NrOfCommands].outfile, 1, STDOUT_FILENO);
-            return 0;
-        }
-    }*/
-
     // Internal commands
     if (STRCMP(comLine[0].argv[0], ==, "echo") || STRCMP(comLine[0].argv[0], ==, "cd")){
 
@@ -267,8 +242,6 @@ int runShell(void){
         for (int i = 0; i < (int)NR_OF_CHILDREN; i++){
             int status;
 
-            printf("Waiting for pid:%d\n", PID_CHILDREN_ARRAY[i]);
-
             fflush(stderr);
             waitpid(PID_CHILDREN_ARRAY[i], &status, 0);
             PID_CHILDREN_ARRAY[i] = 0;
@@ -301,15 +274,11 @@ int loopRunShell(void){
 }
 
 void killChildren(int sig)
-{
-
-    printf("NR_OF_CHILDREN: %d\n", NR_OF_CHILDREN);
-    
+{    
     // Kill children
     for (int i = 0; i < (int)NR_OF_CHILDREN; i++)
     {   
         sig++;
-        fprintf(stderr, "Killing PID[%d]:%d\n", i, PID_CHILDREN_ARRAY[i]);
         if (kill(PID_CHILDREN_ARRAY[i], SIGKILL) < 0)
         {
             fprintf(stderr, "Error killing child!\n");
