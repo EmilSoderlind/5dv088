@@ -16,8 +16,6 @@
 
 typedef void Sigfunc(int);
 
-void catchSignal(int theSignal);
-
 Sigfunc *signalHand(int signo, Sigfunc *func);
 
 #endif
