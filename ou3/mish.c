@@ -298,7 +298,7 @@ int loopRunShell(void){
     return 0;
 }
 
-void killChildren()
+void killChildren(void)
 {
     // Kill children
     for (int i = 0; i < (int)NR_OF_CHILDREN; i++)

@@ -37,7 +37,7 @@ int runShell(void);
 
 int loopRunShell(void);
 
-void killChildren(int sig);
+void killChildren(void);
 
 int main(void);
 
