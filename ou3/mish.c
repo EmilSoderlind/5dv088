@@ -68,17 +68,17 @@ int prompt(command commandArr[], int* NrOfCommands){
 int runCommand(command com, int commandIndex, int nrOfCommands, int pipeArray[][2]){
 
     //print_command(com);
-
     int tempPID; // For saving down in parent
 
     // Fork
     if ((tempPID = fork()) < 0){
         // ERROR
         perror("Error forking!");
-        return 1;
+        return -1;
     }
 
     if (tempPID != 0){ // Parent <- Save childrens PID
+        printf("PID_CHILDREN_ARRAY[%d] = %d \n", NR_OF_CHILDREN, tempPID);
         PID_CHILDREN_ARRAY[NR_OF_CHILDREN] = tempPID;
         NR_OF_CHILDREN++;
     }else{ // Children <- Set childrens PROCESS_PID
