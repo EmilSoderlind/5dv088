@@ -11,22 +11,10 @@
 #include <stdio.h>
 #include <string.h>
 
-int arr[300];
+#include "queue.c"
 
-void *rCode(void *dummy)
-{
-    arr[0] = 1;
-    printf("rCode sleep\n");
-    sleep(5);
-    printf("rCode sleep - DONE\n");
-    return NULL;
-}
 
-void *wCode(void *dummy){
-
-    arr[0] = 2;
-    return NULL;
-}
+int lengthOfQueue = 0;
 
 char *buildFullFilePathconcat(const char *s1, const char *s2)
 {
@@ -37,7 +25,25 @@ char *buildFullFilePathconcat(const char *s1, const char *s2)
     return result;
 }
 
-int browseDirectory(char *parentDirectoryName){
+int browseDirectory(){
+
+    char *parentDirectoryName = "testDir";
+    lengthOfQueue--;
+
+    printf("parentDirectoryName: %s\n", parentDirectoryName);
+
+    if (parentDirectoryName == NULL){
+        printf("NULL parentDirectoryName\n");
+        return -1;
+    }
+
+    if (strlen(parentDirectoryName) == 0){ // Empty string from dequeue
+        printf("empty parentDirectoryName\n");
+        return -1;
+    }
+
+    printf("------- Searching: %s-------\n", parentDirectoryName);
+
     DIR *currDirStream;
     struct dirent *dirEntry;
 
@@ -48,50 +54,60 @@ int browseDirectory(char *parentDirectoryName){
                 "Error: Unable to open dir '%s' on line %d\n",
                 parentDirectoryName, __LINE__);
         return -1;
-    }else{
-        fprintf(stdout, "Opening directory '%s'\n\n", parentDirectoryName);
     }
 
     while ((dirEntry = readdir(currDirStream)) != NULL){
 
         // Ignore . and ..
-        if (strcmp(dirEntry->d_name, ".") != 0 && strcmp(dirEntry->d_name, "..") != 0)
-        {
+        if (strcmp(dirEntry->d_name, ".") != 0 && strcmp(dirEntry->d_name, "..") != 0){
            
-            printf("dirEntry->d_name = %s\n", dirEntry->d_name);
-
             char *halfPath = buildFullFilePathconcat(parentDirectoryName, "/");
-            printf("halfPath: %s\n",halfPath);
             char *fullPath = buildFullFilePathconcat(halfPath, dirEntry->d_name);
             free(halfPath);
-            printf("fullPath: %s\n", fullPath);
-
             
             struct stat buffer;
             if (lstat(fullPath, &buffer) < 0){
                 perror(dirEntry->d_name);
                 fprintf(stderr, "Error: Can't stat file '%s' on line %d\n", dirEntry->d_name, __LINE__);
             }
-            free(fullPath);
 
-            printf("%d\n",buffer.st_mode);
-            printf("S_ISREG(buffer.st_mode) -> %d\n", S_ISREG(buffer.st_mode));
-
-            if (!S_ISREG(buffer.st_mode)){
-                fprintf(stderr, "'%s' is NOT a regular file\n",parentDirectoryName);
+            switch (buffer.st_mode & S_IFMT){
+            case S_IFREG:
+                printf("Ignore: %s\n", fullPath);
+                break;
+            case S_IFDIR:
+                printf("Append: %s --> Queue\n",fullPath);
+                //enqueue(fullPath);
+                lengthOfQueue++;;
+                break;
+            case S_IFLNK:
+                printf("Ignore: %s\n", fullPath);
+                break;
+            default:
+                printf("Ignore: %s\n", fullPath);
+                printf("\n");
             }
-
-            printf("\n");
         }
     }
-
+    closedir(currDirStream);
     return 0;
 }
 
-int main(void)
-{
-    arr[0] = 0;
-    
+
+int main(int argc, char** argv){
+
+    printf("main()\n");
+
+ 
+        for (int i = 1; i < argc; i++)
+    {
+        enqueue(argv[i]);
+        lengthOfQueue++;
+    }
+
+    //list_append(&list,"testDir");
+    //list_append(&list,"testDir/deepFold");
+
     /*
     pthread_t rthread;
     pthread_t wthread;
@@ -115,9 +131,13 @@ int main(void)
     printf("arr[0] -> %d\n", arr[0]);
     */
 
-    browseDirectory("/Users/Emil/Grov-Filer/5dv088/ou4/testDir");
+    while(lengthOfQueue > 0){
+        printf("lengthOfQueue: %d\n",lengthOfQueue);
+        
+        browseDirectory();
 
-    putchar('\n');
+        printf("---\n");
+    }
 
     return 0;
 }
