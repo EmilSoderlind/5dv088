@@ -100,10 +100,11 @@ int browseDirectory(){
                 printf("tvalue: %s\n", tvalue);
                 printf("fullPath: %s\n", fullPath);
 
-
-                // Type specified 
-                if (tflag && (strstr(fullPath, filenameGoal) != NULL) && (strstr(fullPath, tvalue) != NULL)) {
-                    foundFileFlag = 1;
+                if(strlen(tvalue) == 0){
+                    // Type specified 
+                    if (tflag && (strstr(fullPath, filenameGoal) != NULL) && (strstr(fullPath, tvalue) != NULL)) {
+                        foundFileFlag = 1;
+                    }
                 // Type NOT specified 
                 }else if (strstr(fullPath, filenameGoal) != NULL){
                     foundFileFlag = 1;
