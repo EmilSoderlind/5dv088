@@ -13,8 +13,9 @@
 
 #include "queue.c"
 
-
 int lengthOfQueue = 0;
+Queue *toBeVisitedQueue;
+char *filenameGoal = "";
 
 char *buildFullFilePathconcat(const char *s1, const char *s2)
 {
@@ -25,9 +26,24 @@ char *buildFullFilePathconcat(const char *s1, const char *s2)
     return result;
 }
 
+void enqueueCharToQueue(char *name){
+    Node *start_dir = Node_init((sizeof name)*5);
+    char *stringToBeEnqueued = (char *) malloc((strlen(name) + 1) * sizeof(char));
+
+    strcpy(stringToBeEnqueued, name);
+    printf("Enqueing: %s\n",name);
+    start_dir->name = stringToBeEnqueued;
+    Enqueue(toBeVisitedQueue, start_dir);
+}
+
 int browseDirectory(){
 
-    char *parentDirectoryName = "testDir";
+    char *parentDirectoryName = Dequeue(toBeVisitedQueue)->name;
+
+    if(parentDirectoryName == NULL){
+        return -1;
+    }
+
     lengthOfQueue--;
 
     printf("parentDirectoryName: %s\n", parentDirectoryName);
@@ -42,7 +58,7 @@ int browseDirectory(){
         return -1;
     }
 
-    printf("------- Searching: %s-------\n", parentDirectoryName);
+    printf("\n\n------- Searching: %s-------\n", parentDirectoryName);
 
     DIR *currDirStream;
     struct dirent *dirEntry;
@@ -77,8 +93,10 @@ int browseDirectory(){
                 break;
             case S_IFDIR:
                 printf("Append: %s --> Queue\n",fullPath);
-                //enqueue(fullPath);
-                lengthOfQueue++;;
+
+                enqueueCharToQueue(fullPath);
+                lengthOfQueue++;
+                
                 break;
             case S_IFLNK:
                 printf("Ignore: %s\n", fullPath);
@@ -94,16 +112,29 @@ int browseDirectory(){
 }
 
 
+
 int main(int argc, char** argv){
 
     printf("main()\n");
 
+    filenameGoal = "godis.txt";
+
+    if(argc == 1){
+        printf("Empty argv!\n");
+        return -1;
+    }
+
+
+    toBeVisitedQueue = Queue_create();
  
-        for (int i = 1; i < argc; i++)
-    {
-        enqueue(argv[i]);
+    for (int i = 1; i < argc; i++){
+
+        enqueueCharToQueue(argv[i]);
+
         lengthOfQueue++;
     }
+
+    
 
     //list_append(&list,"testDir");
     //list_append(&list,"testDir/deepFold");
@@ -130,14 +161,19 @@ int main(int argc, char** argv){
     printf("Threads done!\n");
     printf("arr[0] -> %d\n", arr[0]);
     */
-
+    
+    
     while(lengthOfQueue > 0){
-        printf("lengthOfQueue: %d\n",lengthOfQueue);
+        printf("-1- lengthOfQueue: %d\n", lengthOfQueue);
         
         browseDirectory();
-
-        printf("---\n");
+        
+        printf("-2- lengthOfQueue: %d\n", lengthOfQueue);
     }
+
+    Queue_free(toBeVisitedQueue);
+
+    printf("End of queue!\n");
 
     return 0;
 }

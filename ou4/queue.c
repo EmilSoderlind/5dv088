@@ -1,76 +1,146 @@
-
-/* Lånat implementation från
- * https://gist.github.com/Groxx/310147
- * Gjort små justeringar själv
+/*
+ * queue.c
+ *  Anton Eriksson (tfy12aen@cs.umu.se)
+ *  Laboration 5 Systemnara programmering HT15
+ *  Queue implementation as a singly linked list
  */
 
+#include "queue.h"
+
 /*
-	Implementation by Groxx, with absolutely no guarantees, so don't complain to me if it breaks stuff.
-	Feel free to use it for awesome, as needed.  Apply liberally, and induce vomiting if you ingest large doses.
-	Note from #0d15eb: BREAKING CHANGE FROM #1d1057: this is now a generic storage, storing pointers to data.  Manage your memory accordingly.
-	Note: now stores the "next" pointer prior to processing, allowing you to process and pop the first item in the list in one pass without losing your place in the queue (and possibly other shenanigans, this one was just handy for my uses so I changed it).
-*/
+ * Create a Node and return it.
+ */
+Node *Node_create(void)
+{
+    Node *n = malloc(sizeof(Node));
 
-typedef void *queue_data_type;
-struct queue_item
-{
-    queue_data_type contents;
-    struct queue_item *next;
-};
-struct queue_root
-{
-    struct queue_item *head;
-    struct queue_item *tail;
-};
+    if (!n)
+    {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
 
-void init_queue(struct queue_root *queue)
-{
-    queue->head = queue->tail = NULL;
+    n->name = NULL;
+    n->next = NULL;
+
+    return n;
 }
 
-void push_queue(struct queue_root *queue, int size, queue_data_type contents)
+/*
+ * Create a Node with field 'name' allocated with 'size'.
+ */
+Node *Node_init(size_t size)
 {
-    struct queue_item *item = malloc(sizeof(item));
-    item->contents = contents;
-    item->next = NULL;
-    if (queue->head == NULL)
+    Node *n = Node_create();
+    n->name = malloc(size);
+
+    if (!n->name)
     {
-        queue->head = queue->tail = item;
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
+    return n;
+}
+
+/*
+ * Free Node
+ */
+void Node_free(Node *n)
+{
+    free(n->name);
+    free(n);
+}
+
+/*
+ * Create Queue
+ */
+Queue *Queue_create(void)
+{
+    Queue *q = malloc(sizeof(Queue));
+
+    if (!q)
+    {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
+    q->front = q->end = NULL;
+    q->length = 0;
+
+    return q;
+}
+
+/*
+ * Return the length of Queue.
+ */
+int Queue_length(Queue *q)
+{
+    return q->length;
+}
+
+/*
+ * Is the Queue empty?
+ */
+bool Queue_isempty(Queue *q)
+{
+    return Queue_length(q) == 0;
+}
+
+/*
+ * Add Node to end of Queue.
+ */
+void Enqueue(Queue *q, Node *node)
+{
+    if (q->end == NULL)
+    {
+        q->front = q->end = node;
     }
     else
     {
-        queue->tail = queue->tail->next = item;
+        q->end->next = node;
+        q->end = q->end->next;
     }
+
+    q->length++;
 }
 
-queue_data_type pop_queue(struct queue_root *queue)
+/*
+ * Remove the first Node from Queue and return it.
+ *
+ * The user is responsible to free the Node afterwards.
+ */
+Node *Dequeue(Queue *q)
 {
-    queue_data_type popped;
-    if (queue->head == NULL)
+    if (q->front == NULL)
     {
-        return NULL; // causes a compile warning.  Just check for ==NULL when popping.
+        return NULL;
     }
-    else
+
+    Node *front = q->front;
+    q->front = q->front->next;
+    q->length--;
+
+    if (Queue_isempty(q))
     {
-        popped = queue->head->contents;
-        struct queue_item *next = queue->head->next;
-        free(queue->head);
-        queue->head = next;
-        if (queue->head == NULL)
-            queue->tail = NULL;
+        q->front = q->end = NULL;
     }
-    return popped;
+
+    front->next = NULL;
+    printf("front: %s\n",front->name);
+    return front;
 }
 
-void process_queue(struct queue_root *queue, void (*func)(queue_data_type))
-{
-    if (queue == NULL)
-        return;
-    struct queue_item *current = queue->head;
-    while (current != NULL)
+/*
+ * Free the Queue and all contained Nodes.
+ */
+void Queue_free(Queue *q){
+    printf("Free:ing queue\n");
+    while (!Queue_isempty(q))
     {
-        next = current->next
-                   func(current->contents);
-        current = next;
+        Node *n = Dequeue(q);
+        Node_free(n);
     }
+
+    free(q);
 }
