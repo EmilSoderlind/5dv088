@@ -127,7 +127,6 @@ Node *Dequeue(Queue *q)
     }
 
     front->next = NULL;
-    printf("front: %s\n",front->name);
     return front;
 }
 

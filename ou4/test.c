@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
+#include <ctype.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -16,6 +17,9 @@
 int lengthOfQueue = 0;
 Queue *toBeVisitedQueue;
 char *filenameGoal = "";
+
+int tflag = 0;
+char *tvalue = "";
 
 char *buildFullFilePathconcat(const char *s1, const char *s2)
 {
@@ -84,15 +88,34 @@ int browseDirectory(){
             struct stat buffer;
             if (lstat(fullPath, &buffer) < 0){
                 perror(dirEntry->d_name);
-                fprintf(stderr, "Error: Can't stat file '%s' on line %d\n", dirEntry->d_name, __LINE__);
             }
+
+            int foundFileFlag = 0;
 
             switch (buffer.st_mode & S_IFMT){
             case S_IFREG:
-                printf("Ignore: %s\n", fullPath);
+
+                printf("filenameGoal: %s\n",filenameGoal);
+                printf("tflag: %d\n",tflag);
+                printf("tvalue: %s\n", tvalue);
+                printf("fullPath: %s\n", fullPath);
+
+
+                // Type specified 
+                if (tflag && (strstr(fullPath, filenameGoal) != NULL) && (strstr(fullPath, tvalue) != NULL)) {
+                    foundFileFlag = 1;
+                // Type NOT specified 
+                }else if (strstr(fullPath, filenameGoal) != NULL){
+                    foundFileFlag = 1;
+                }
+
+                if(foundFileFlag == 1){
+                    printf("%s\n",fullPath);
+                }
                 break;
             case S_IFDIR:
                 printf("Append: %s --> Queue\n",fullPath);
+                
                 enqueueCharToQueue(fullPath);
                 lengthOfQueue++;
                 
@@ -107,6 +130,7 @@ int browseDirectory(){
             free(fullPath);
         }
     }
+    free(parentDirectoryName);
     closedir(currDirStream);
     return 0;
 }
@@ -115,25 +139,55 @@ int browseDirectory(){
 
 int main(int argc, char** argv){
 
-    printf("main()\n");
+    int c;
+    
+    int pflag = 0;
+    char *pvalue = "";
 
-    filenameGoal = "godis.txt";
+    while ((c = getopt(argc, argv, "t:p:")) != -1){
+        switch (c){
+            case 't':
+                tflag = 1;
+                tvalue = optarg;
+                break;
+            case 'p':
+                pflag = 1;
+                pvalue = optarg;
+                break;
+            case '?':
+                if (optopt == 'c'){
+                    fprintf(stderr, "Option -%c requires an argument.\n", optopt);
+                }else if (isprint(optopt)){
+                    fprintf(stderr, "Unknown option `-%c'.\n", optopt);
+                }else{
+                    fprintf(stderr,
+                            "Unknown option character `\\x%x'.\n",optopt);
+                return 1;
+                }
+            default:
+                abort();
+        }
+    }
+
+    printf("tflag: %d\n",tflag);
+    printf("tvalue: %s\n", tvalue);
+    printf("pflag: %d\n", pflag);
+    printf("pvalue: %s\n", pvalue);
+
+    filenameGoal = argv[argc-1];
+
 
     if(argc == 1){
         printf("Empty argv!\n");
         return -1;
     }
 
-
+    // Creating queue
     toBeVisitedQueue = Queue_create();
  
-    for (int i = 1; i < argc; i++){
-
-        enqueueCharToQueue(argv[i]);
-
-        lengthOfQueue++;
-    }
-
+    enqueueCharToQueue("testDir");
+    lengthOfQueue++;
+    
     
 
     //list_append(&list,"testDir");
