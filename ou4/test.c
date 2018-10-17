@@ -93,7 +93,6 @@ int browseDirectory(){
                 break;
             case S_IFDIR:
                 printf("Append: %s --> Queue\n",fullPath);
-
                 enqueueCharToQueue(fullPath);
                 lengthOfQueue++;
                 
@@ -105,6 +104,7 @@ int browseDirectory(){
                 printf("Ignore: %s\n", fullPath);
                 printf("\n");
             }
+            free(fullPath);
         }
     }
     closedir(currDirStream);
