@@ -14,7 +14,7 @@ char *tvalue = "";
 char *buildFullFilePathconcat(const char *s1, const char *s2)
 {
     char *result = malloc(strlen(s1) + strlen(s2) + 3); // +1 for the null-terminator
-    // in real code you would check for errors in malloc here
+    // in real code you would check for errors in maloc here
     strcpy(result, s1);
     strcat(result, s2);
     return result;
@@ -26,25 +26,20 @@ int browseDirectory(void){
     char *parentDirectoryName = dequeueFromQueue();
 
     if (parentDirectoryName == NULL){
-        return -1;
-    }
-
-    if (parentDirectoryName == NULL){
         fprintf(stderr,"NULL parentDirectoryName\n");
         return -1;
     }
 
     if (strlen(parentDirectoryName) == 0){ // Empty string from dequeue
         fprintf(stderr, "empty parentDirectoryName\n");
-        free(parentDirectoryName); 
         return -1;
     }
 
     DIR *currDirStream;
     struct dirent *dirEntry;
 
-    if ((currDirStream = opendir(parentDirectoryName)) == NULL)
-    {
+
+    if ((currDirStream = opendir(parentDirectoryName)) == NULL){
         perror(parentDirectoryName);
         fprintf(stderr,"Error: Unable to open dir '%s' on line %d\n",parentDirectoryName, __LINE__);
         return -1;
@@ -100,7 +95,6 @@ int browseDirectory(void){
             free(fullPath);
         }
     }
-    free(parentDirectoryName);
     closedir(currDirStream);
     return 0;
 }
@@ -201,7 +195,10 @@ int main(int argc, char** argv){
 }
 
 void enqueueCharToQueue(char *name){
-    Node *start_dir = Node_init((sizeof name) * 5);
+        
+    //Node *start_dir = Node_init((sizeof(name)*2));
+    Node *start_dir = Node_create();
+
     char *stringToBeEnqueued = (char *)malloc((strlen(name) + 1) * sizeof(char));
 
     strcpy(stringToBeEnqueued, name);
@@ -219,10 +216,10 @@ int readLengthOfQueue(void){
 
 // WRAPER Increment lengthOfQueue with 1 threadsafely
 void addDirectoryToQueue(char *newDir){
-    
+
     // TO BUILD MORE
-    lengthOfQueue++;
     enqueueCharToQueue(newDir);
+    lengthOfQueue++;
 }
 
 // WRAPER
@@ -235,8 +232,8 @@ char* dequeueFromQueue(void){
 
     // Make threadsafe
 
-
     lengthOfQueue--;
+
     return Dequeue(toBeVisitedQueue)->name;
 }
 
