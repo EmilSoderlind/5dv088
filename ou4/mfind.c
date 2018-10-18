@@ -219,7 +219,6 @@ int readLengthOfQueue(void){
 
 // WRAPER Increment lengthOfQueue with 1 threadsafely
 void addDirectoryToQueue(char *newDir){
-    printf("");
 
     // TO BUILD MORE
     lengthOfQueue++;
@@ -257,7 +256,6 @@ void goThreadGo(void){
 
     while (!isQueueEmpty()){
         browseDirectory();
-        printf("");
         callsToOpenDir++;
     }
 
