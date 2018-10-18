@@ -9,6 +9,8 @@ char *filenameGoal = "";
 int tflag = 0;
 char *tvalue = "";
 
+
+
 char *buildFullFilePathconcat(const char *s1, const char *s2)
 {
     char *result = malloc(strlen(s1) + strlen(s2) + 3); // +1 for the null-terminator
@@ -18,20 +20,12 @@ char *buildFullFilePathconcat(const char *s1, const char *s2)
     return result;
 }
 
-void enqueueCharToQueue(char *name){
-    Node *start_dir = Node_init((sizeof name)*5);
-    char *stringToBeEnqueued = (char *) malloc((strlen(name) + 1) * sizeof(char));
-
-    strcpy(stringToBeEnqueued, name);
-    start_dir->name = stringToBeEnqueued;
-    Enqueue(toBeVisitedQueue, start_dir);
-}
 
 int browseDirectory(void){
 
-    char *parentDirectoryName = Dequeue(toBeVisitedQueue)->name;
+    char *parentDirectoryName = dequeueFromQueue();
 
-    if(parentDirectoryName == NULL){
+    if (parentDirectoryName == NULL){
         return -1;
     }
 
@@ -49,17 +43,11 @@ int browseDirectory(void){
         return -1;
     }
 
-    //printf("Searching: %s-------\n", parentDirectoryName);
-
     DIR *currDirStream;
     struct dirent *dirEntry;
 
-    if ((currDirStream = opendir(parentDirectoryName)) == NULL)
-    {
-        perror("testDir");
-        fprintf(stderr,
-                "Error: Unable to open dir '%s' on line %d\n",
-                parentDirectoryName, __LINE__);
+    if ((currDirStream = opendir(parentDirectoryName)) == NULL){
+        perror(parentDirectoryName);
         return -1;
     }
 
@@ -84,8 +72,7 @@ int browseDirectory(void){
                 // Not intrested in files
                 if (((strcmp(tvalue, "d")) != 0) || ((strcmp(tvalue, "l")) != 0)){
                     if ((strstr(dirEntry->d_name, filenameGoal) != NULL)){
-                        printf("FOUND %s\n", dirEntry->d_name);
-                        printf("dir: %s\n",fullPath);
+                        printf("%s\n",fullPath);
                     }
                 }
 
@@ -93,19 +80,15 @@ int browseDirectory(void){
             case S_IFDIR:
                 
                 if (((strcmp(tvalue, "d")) == 0) && (strstr(dirEntry->d_name, filenameGoal) != NULL)){
-                    printf("FOUND FOLDER %s\n", dirEntry->d_name);
-                    printf("dir: %s\n", fullPath);
+                    printf("%s\n", fullPath);
                 }
 
-                enqueueCharToQueue(fullPath);
-                lengthOfQueue++;
-                
+                addDirectoryToQueue(fullPath);
+
                 break;
             case S_IFLNK:
-                if (((strcmp(tvalue, "l")) == 0) && (strstr(dirEntry->d_name, filenameGoal) != NULL))
-                {
-                    printf("FOUND LINK %s\n", dirEntry->d_name);
-                    printf("dir: %s\n", fullPath);
+                if (((strcmp(tvalue, "l")) == 0) && (strstr(dirEntry->d_name, filenameGoal) != NULL)){
+                    printf("%s\n", fullPath);
                 }
                 //printf("Ignore: %s\n", fullPath);
                 break;
@@ -156,12 +139,12 @@ int main(int argc, char** argv){
         }
     }
 
-    printf("Threads: %s\n",pvalue);
-
     if(argc == 1){
-        printf("Empty argv!\n");
+        fprintf(stderr,"Empty argv!\n");
         return -1;
     }
+
+    printf("Threads: %s\n", pvalue);
 
     filenameGoal = argv[argc - 1];
 
@@ -178,8 +161,7 @@ int main(int argc, char** argv){
 
     // Enqueueing startfolders argv-arguments
     for(int i = startFolderIndex; i < argc-1; i++){
-        enqueueCharToQueue(argv[i]);
-        lengthOfQueue++;
+        addDirectoryToQueue(argv[i]);
     }
 
     //list_append(&list,"testDir");
@@ -209,14 +191,77 @@ int main(int argc, char** argv){
     */
     
     
-    while(lengthOfQueue > 0){
-        browseDirectory();        
-    }
+    goThreadGo();
 
-    Queue_free(toBeVisitedQueue);
+    Queue_free(toBeVisitedQueue); // CALL ONLY ONCE
 
     printf("End of queue!\n");
 
     return 0;
 }
 
+void enqueueCharToQueue(char *name){
+    Node *start_dir = Node_init((sizeof name) * 5);
+    char *stringToBeEnqueued = (char *)malloc((strlen(name) + 1) * sizeof(char));
+
+    strcpy(stringToBeEnqueued, name);
+    start_dir->name = stringToBeEnqueued;
+    Enqueue(toBeVisitedQueue, start_dir);
+}
+
+// WRAPER Return lengthOfQueeu threadsafely
+int readLengthOfQueue(void){
+
+    // TO BUILD MORE
+
+    return lengthOfQueue;
+}
+
+// WRAPER Increment lengthOfQueue with 1 threadsafely
+void addDirectoryToQueue(char *newDir){
+    printf("");
+
+    // TO BUILD MORE
+    lengthOfQueue++;
+    enqueueCharToQueue(newDir);
+}
+
+// WRAPER
+char* dequeueFromQueue(void){
+
+    if(lengthOfQueue == 0){
+        fprintf(stderr,"Queue is already empty\n");
+        return NULL;
+    }
+
+    // Make threadsafe
+
+
+    lengthOfQueue--;
+    return Dequeue(toBeVisitedQueue)->name;
+}
+
+// WRAPER
+bool isQueueEmpty(void){
+
+    // Make threadsafe
+
+    return (lengthOfQueue == 0);
+}
+
+// Function to be called with threads -> Runs search algorithm
+void goThreadGo(void){
+    printf("goThreadGo!\n");
+
+    int callsToOpenDir = 0;
+
+    while (!isQueueEmpty()){
+        browseDirectory();
+        printf("");
+        callsToOpenDir++;
+    }
+
+    pthread_t id = pthread_self();
+
+    printf("Thread: %08x Reads: %d\n", (int)id, callsToOpenDir);
+}
