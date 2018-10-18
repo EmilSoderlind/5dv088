@@ -14,5 +14,8 @@ queue.o: queue.c queue.h
 mfind.o: mfind.c mfind.h
 	$(CC) $(CFLAGS) mfind.c -c
 
+valgrind: all
+	valgrind --leak-check=yes --show-reachable=yes ./mfind .. i
+
 clean:
 	rm -rf *.o *.out mfind

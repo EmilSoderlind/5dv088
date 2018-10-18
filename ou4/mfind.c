@@ -69,7 +69,7 @@ int browseDirectory(void){
             case S_IFREG:
 
                 // Not intrested in files
-                if (((strcmp(tvalue, "d")) != 0) || ((strcmp(tvalue, "l")) != 0)){
+                if (((strcmp(tvalue, "d")) != 0) && ((strcmp(tvalue, "l")) != 0)){
                     if ((strstr(dirEntry->d_name, filenameGoal) != NULL)){
                         printf("%s\n",fullPath);
                     }
