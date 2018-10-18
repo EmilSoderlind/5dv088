@@ -39,12 +39,13 @@ int browseDirectory(void){
 
 
     if (parentDirectoryName == NULL){
-        printf("NULL parentDirectoryName\n");
+        fprintf(stderr,"NULL parentDirectoryName\n");
         return -1;
     }
 
     if (strlen(parentDirectoryName) == 0){ // Empty string from dequeue
-        printf("empty parentDirectoryName\n");
+        fprintf(stderr, "empty parentDirectoryName\n");
+        free(parentDirectoryName); 
         return -1;
     }
 
@@ -155,16 +156,14 @@ int main(int argc, char** argv){
         }
     }
 
-
+    printf("Threads: %s\n",pvalue);
 
     if(argc == 1){
         printf("Empty argv!\n");
         return -1;
     }
 
-
     filenameGoal = argv[argc - 1];
-
 
     // Calculating which argv-indexes startFolders have
     int startFolderIndex = 1;
@@ -177,7 +176,7 @@ int main(int argc, char** argv){
     // Creating queue
     toBeVisitedQueue = Queue_create();
 
-    // Enqueueing argv-arguments
+    // Enqueueing startfolders argv-arguments
     for(int i = startFolderIndex; i < argc-1; i++){
         enqueueCharToQueue(argv[i]);
         lengthOfQueue++;
