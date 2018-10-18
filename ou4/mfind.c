@@ -42,7 +42,6 @@ int browseDirectory(void){
  
     if ((currDirStream = opendir(parentDirectoryName)) == NULL){
         perror(parentDirectoryName);
-        fprintf(stderr,"Error: Unable to open dir '%s' on line %d\n",parentDirectoryName, __LINE__);
         return -1;
     }
 
@@ -53,9 +52,10 @@ int browseDirectory(void){
            
             // halfPath is only parentDirectory + "/"
             char *halfPath = buildFullFilePathconcat(parentDirectoryName, "/");
-            char *fullPath = buildFullFilePathconcat(halfPath, dirEntry->d_name);
-            // fullPath is full directory + filename
 
+            // fullPath is full directory + filename
+            char *fullPath = buildFullFilePathconcat(halfPath, dirEntry->d_name);
+            
             struct stat buffer;
             if (lstat(fullPath, &buffer) < 0){
                 perror(dirEntry->d_name);
@@ -86,7 +86,6 @@ int browseDirectory(void){
                 {
                     printf("%s\n", fullPath);
                 }
-                //printf("Ignore: %s\n", fullPath);
                 break;
             default:
                 //printf("Ignore: %s\n", fullPath);
@@ -140,7 +139,9 @@ int main(int argc, char** argv){
         return -1;
     }
 
-    printf("Threads: %s\n", pvalue);
+    int numberOfThreads = atoi(pvalue);
+
+    printf("Threads: %d\n", numberOfThreads);
 
     filenameGoal = argv[argc - 1];
 
@@ -158,6 +159,19 @@ int main(int argc, char** argv){
     // Enqueueing startfolders argv-arguments
     for(int i = startFolderIndex; i < argc-1; i++){
         addDirectoryToQueue(argv[i]);
+    }
+
+    pthread_t threadArray[numberOfThreads];
+
+    for(int i = 0; i<numberOfThreads;i++){
+        printf("Creating thread\n");
+        pthread_t newThread;
+        threadArray[i] = newThread;
+
+        if (pthread_create(&newThread, __DARWIN_NULL, &goThreadGo,  __DARWIN_NULL)){
+            fprintf(stderr, "Couldn't create thread\n");
+            exit(1);
+        }
     }
 
     //list_append(&list,"testDir");
@@ -185,10 +199,8 @@ int main(int argc, char** argv){
     printf("Threads done!\n");
     printf("arr[0] -> %d\n", arr[0]);
     */
-    
-    
-    goThreadGo();
 
+    goThreadGo(NULL);
 
     Queue_free(toBeVisitedQueue); // CALL ONLY ONCE
 
@@ -213,6 +225,7 @@ void enqueueCharToQueue(char *name){
 int readLengthOfQueue(void){
 
     // TO BUILD MORE
+    
     return lengthOfQueue;
 }
 
@@ -256,11 +269,18 @@ void goThreadGo(void){
     int callsToOpenDir = 0;
 
     while (!isQueueEmpty()){
-        browseDirectory();
+
+
+
+        browseDirectory();        
         callsToOpenDir++;
+
+
+
     }
 
     pthread_t id = pthread_self();
 
     printf("Thread: %08x Reads: %d\n", (int)id, callsToOpenDir);
+    
 }

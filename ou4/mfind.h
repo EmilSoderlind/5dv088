@@ -20,7 +20,7 @@ char *buildFullFilePathconcat(const char *s1, const char *s2);
 void enqueueCharToQueue(char *name);
 int browseDirectory(void);
 void goThreadGo(void);
-
+    
 int readLengthOfQueue(void);
 void addDirectoryToQueue(char *newDir);
 char *dequeueFromQueue(void);
