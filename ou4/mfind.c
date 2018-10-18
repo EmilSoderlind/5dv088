@@ -29,9 +29,6 @@ int browseDirectory(void){
         return -1;
     }
 
-    lengthOfQueue--;
-
-
     if (parentDirectoryName == NULL){
         fprintf(stderr,"NULL parentDirectoryName\n");
         return -1;
@@ -46,8 +43,10 @@ int browseDirectory(void){
     DIR *currDirStream;
     struct dirent *dirEntry;
 
-    if ((currDirStream = opendir(parentDirectoryName)) == NULL){
+    if ((currDirStream = opendir(parentDirectoryName)) == NULL)
+    {
         perror(parentDirectoryName);
+        fprintf(stderr,"Error: Unable to open dir '%s' on line %d\n",parentDirectoryName, __LINE__);
         return -1;
     }
 
@@ -87,7 +86,8 @@ int browseDirectory(void){
 
                 break;
             case S_IFLNK:
-                if (((strcmp(tvalue, "l")) == 0) && (strstr(dirEntry->d_name, filenameGoal) != NULL)){
+                if (((strcmp(tvalue, "l")) == 0) && (strstr(dirEntry->d_name, filenameGoal) != NULL))
+                {
                     printf("%s\n", fullPath);
                 }
                 //printf("Ignore: %s\n", fullPath);
@@ -219,7 +219,7 @@ int readLengthOfQueue(void){
 
 // WRAPER Increment lengthOfQueue with 1 threadsafely
 void addDirectoryToQueue(char *newDir){
-
+    
     // TO BUILD MORE
     lengthOfQueue++;
     enqueueCharToQueue(newDir);
@@ -242,7 +242,7 @@ char* dequeueFromQueue(void){
 
 // WRAPER
 bool isQueueEmpty(void){
-
+    
     // Make threadsafe
 
     return (lengthOfQueue == 0);
