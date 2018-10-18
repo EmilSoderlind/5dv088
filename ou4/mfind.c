@@ -1,18 +1,6 @@
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <limits.h> //For PATH_MAX
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <ctype.h>
 
-#include <stdio.h>
-#include <string.h>
-
-#include "queue.c"
+#include "mfind.h"
 
 int lengthOfQueue = 0;
 Queue *toBeVisitedQueue;
@@ -35,12 +23,11 @@ void enqueueCharToQueue(char *name){
     char *stringToBeEnqueued = (char *) malloc((strlen(name) + 1) * sizeof(char));
 
     strcpy(stringToBeEnqueued, name);
-    printf("Enqueing: %s\n",name);
     start_dir->name = stringToBeEnqueued;
     Enqueue(toBeVisitedQueue, start_dir);
 }
 
-int browseDirectory(){
+int browseDirectory(void){
 
     char *parentDirectoryName = Dequeue(toBeVisitedQueue)->name;
 
@@ -50,7 +37,6 @@ int browseDirectory(){
 
     lengthOfQueue--;
 
-    printf("parentDirectoryName: %s\n", parentDirectoryName);
 
     if (parentDirectoryName == NULL){
         printf("NULL parentDirectoryName\n");
@@ -62,7 +48,7 @@ int browseDirectory(){
         return -1;
     }
 
-    printf("\n\n------- Searching: %s-------\n", parentDirectoryName);
+    //printf("Searching: %s-------\n", parentDirectoryName);
 
     DIR *currDirStream;
     struct dirent *dirEntry;
@@ -81,53 +67,52 @@ int browseDirectory(){
         // Ignore . and ..
         if (strcmp(dirEntry->d_name, ".") != 0 && strcmp(dirEntry->d_name, "..") != 0){
            
+            // halfPath is only parentDirectory + "/"
             char *halfPath = buildFullFilePathconcat(parentDirectoryName, "/");
             char *fullPath = buildFullFilePathconcat(halfPath, dirEntry->d_name);
-            free(halfPath);
-            
+            // fullPath is full directory + filename
+
             struct stat buffer;
             if (lstat(fullPath, &buffer) < 0){
                 perror(dirEntry->d_name);
             }
 
-            int foundFileFlag = 0;
-
             switch (buffer.st_mode & S_IFMT){
             case S_IFREG:
 
-                printf("filenameGoal: %s\n",filenameGoal);
-                printf("tflag: %d\n",tflag);
-                printf("tvalue: %s\n", tvalue);
-                printf("fullPath: %s\n", fullPath);
-
-                if(strlen(tvalue) == 0){
-                    // Type specified 
-                    if (tflag && (strstr(fullPath, filenameGoal) != NULL) && (strstr(fullPath, tvalue) != NULL)) {
-                        foundFileFlag = 1;
+                // Not intrested in files
+                if (((strcmp(tvalue, "d")) != 0) || ((strcmp(tvalue, "l")) != 0)){
+                    if ((strstr(dirEntry->d_name, filenameGoal) != NULL)){
+                        printf("FOUND %s\n", dirEntry->d_name);
+                        printf("dir: %s\n",fullPath);
                     }
-                // Type NOT specified 
-                }else if (strstr(fullPath, filenameGoal) != NULL){
-                    foundFileFlag = 1;
                 }
 
-                if(foundFileFlag == 1){
-                    printf("%s\n",fullPath);
-                }
                 break;
             case S_IFDIR:
-                printf("Append: %s --> Queue\n",fullPath);
                 
+                if (((strcmp(tvalue, "d")) == 0) && (strstr(dirEntry->d_name, filenameGoal) != NULL)){
+                    printf("FOUND FOLDER %s\n", dirEntry->d_name);
+                    printf("dir: %s\n", fullPath);
+                }
+
                 enqueueCharToQueue(fullPath);
                 lengthOfQueue++;
                 
                 break;
             case S_IFLNK:
-                printf("Ignore: %s\n", fullPath);
+                if (((strcmp(tvalue, "l")) == 0) && (strstr(dirEntry->d_name, filenameGoal) != NULL))
+                {
+                    printf("FOUND LINK %s\n", dirEntry->d_name);
+                    printf("dir: %s\n", fullPath);
+                }
+                //printf("Ignore: %s\n", fullPath);
                 break;
             default:
-                printf("Ignore: %s\n", fullPath);
-                printf("\n");
+                //printf("Ignore: %s\n", fullPath);
+                break;
             }
+            free(halfPath);
             free(fullPath);
         }
     }
@@ -170,12 +155,6 @@ int main(int argc, char** argv){
         }
     }
 
-    printf("tflag: %d\n",tflag);
-    printf("tvalue: %s\n", tvalue);
-    printf("pflag: %d\n", pflag);
-    printf("pvalue: %s\n", pvalue);
-
-    filenameGoal = argv[argc-1];
 
 
     if(argc == 1){
@@ -183,13 +162,26 @@ int main(int argc, char** argv){
         return -1;
     }
 
+
+    filenameGoal = argv[argc - 1];
+
+
+    // Calculating which argv-indexes startFolders have
+    int startFolderIndex = 1;
+    if(pflag){
+        startFolderIndex += 2;
+    }if(tflag){
+        startFolderIndex += 2;
+    }
+
     // Creating queue
     toBeVisitedQueue = Queue_create();
- 
-    enqueueCharToQueue("testDir");
-    lengthOfQueue++;
-    
-    
+
+    // Enqueueing argv-arguments
+    for(int i = startFolderIndex; i < argc-1; i++){
+        enqueueCharToQueue(argv[i]);
+        lengthOfQueue++;
+    }
 
     //list_append(&list,"testDir");
     //list_append(&list,"testDir/deepFold");
@@ -219,11 +211,7 @@ int main(int argc, char** argv){
     
     
     while(lengthOfQueue > 0){
-        printf("-1- lengthOfQueue: %d\n", lengthOfQueue);
-        
-        browseDirectory();
-        
-        printf("-2- lengthOfQueue: %d\n", lengthOfQueue);
+        browseDirectory();        
     }
 
     Queue_free(toBeVisitedQueue);
