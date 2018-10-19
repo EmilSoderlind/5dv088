@@ -38,8 +38,8 @@ int browseDirectory(void){
     DIR *currDirStream;
     struct dirent *dirEntry;
 
- 
-    if ((currDirStream = opendir(parentDirectoryName)) == NULL){
+    if ((currDirStream = opendir(parentDirectoryName)) == NULL)
+    {
         perror(parentDirectoryName);
         return -1;
     }
@@ -65,7 +65,7 @@ int browseDirectory(void){
 
                 // Not intrested in files
                 if (((strcmp(tvalue, "d")) != 0) && ((strcmp(tvalue, "l")) != 0)){
-                    if ((strstr(dirEntry->d_name, filenameGoal) != NULL)){
+                    if ((strcmp(dirEntry->d_name, filenameGoal) == 0)){
                         printf("%s\n",fullPath);
                     }
                 }
