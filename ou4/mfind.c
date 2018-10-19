@@ -1,5 +1,4 @@
 
-
 #include "mfind.h"
 
 int lengthOfQueue = 0;
@@ -70,16 +69,13 @@ int browseDirectory(void){
                         printf("%s\n",fullPath);
                     }
                 }
-
                 break;
             case S_IFDIR:
                 
                 if (((strcmp(tvalue, "d")) == 0) && (strstr(dirEntry->d_name, filenameGoal) != NULL)){
                     printf("%s\n", fullPath);
                 }
-
                 addDirectoryToQueue(fullPath);
-
                 break;
             case S_IFLNK:
                 if (((strcmp(tvalue, "l")) == 0) && (strstr(dirEntry->d_name, filenameGoal) != NULL))
@@ -161,6 +157,7 @@ int main(int argc, char** argv){
         addDirectoryToQueue(argv[i]);
     }
 
+    /*
     pthread_t threadArray[numberOfThreads];
 
     for(int i = 0; i<numberOfThreads;i++){
@@ -173,6 +170,7 @@ int main(int argc, char** argv){
             exit(1);
         }
     }
+    */
 
     //list_append(&list,"testDir");
     //list_append(&list,"testDir/deepFold");
@@ -200,7 +198,7 @@ int main(int argc, char** argv){
     printf("arr[0] -> %d\n", arr[0]);
     */
 
-    goThreadGo(NULL);
+    goThreadGo();
 
     Queue_free(toBeVisitedQueue); // CALL ONLY ONCE
 
