@@ -178,7 +178,7 @@ int main(int argc, char** argv){
     threadArray[0] = pthread_self(); 
     for (int i = 1; i < numberOfThreads; i++){
         printf("Creating thread\n");
-        pthread_t newThread = NULL;
+        pthread_t newThread = pthread_self();
         threadArray[i] = newThread;
     }
 
