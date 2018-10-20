@@ -61,7 +61,8 @@ int browseDirectory(void){
             
             struct stat buffer;
             if (lstat(fullPath, &buffer) < 0){
-                fprintf(stderr, "./mfind ");
+                fprintf(stderr,"./mfind: ");
+                fflush(stderr);
                 perror(dirEntry->d_name);
             }
             switch (buffer.st_mode & S_IFMT){
