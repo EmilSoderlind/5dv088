@@ -50,7 +50,8 @@ int browseDirectory(void){
         perror(parentDirectoryName);
         return -1;
     }
-    printf("Searching: %s\n",parentDirectoryName);
+
+    printf("%08x searching: %s\n",(int)pthread_self(),parentDirectoryName);
     while ((dirEntry = readdir(currDirStream)) != NULL){
 
         // Ignore . and ..
@@ -66,7 +67,7 @@ int browseDirectory(void){
             if (lstat(fullPath, &buffer) < 0){
                 perror(dirEntry->d_name);
             }
-
+            printf("file!\n");
             switch (buffer.st_mode & S_IFMT){
             case S_IFREG:
 
@@ -240,19 +241,27 @@ void enqueueCharToQueue(char *name){
 
 // WRAPER Increment lengthOfQueue with 1 threadsafely
 void addDirectoryToQueue(char *newDir){
+    printf("addDirectoryToQueue before-lock\n");
     pthread_mutex_lock(&mtx);
+    printf("addDirectoryToQueue after-lock\n");
 
     enqueueCharToQueue(newDir);
     lengthOfQueue++;
+
+    printf("addDirectoryToQueue before-unlock\n");
     pthread_mutex_unlock(&mtx);
+    printf("addDirectoryToQueue after-unlock\n");
 }
 
 // WRAPER
 char* dequeueFromQueue(void){
+    printf("dequeueFromQueue before-lock\n");
     pthread_mutex_lock(&mtx);
+    printf("dequeueFromQueue after-lock\n");
 
     if(lengthOfQueue == 0){
         fprintf(stderr,"Queue is already empty\n");
+        pthread_mutex_unlock(&mtx);
         return NULL;
     }
 
@@ -263,7 +272,9 @@ char* dequeueFromQueue(void){
     free(tempNode);
 
     lengthOfQueue--;
+    printf("dequeueFromQueue before-unlock\n");
     pthread_mutex_unlock(&mtx);
+    printf("dequeueFromQueue after-unlock\n");
     return tempName;
 }
 
@@ -275,8 +286,6 @@ void *goThreadGo(void *arg){
     arg++;
 
     int callsToOpenDir = 0;
-
-    callsToOpenDir++;
 
     while(true){
         pthread_mutex_lock(&mtx);
@@ -300,7 +309,6 @@ void *goThreadGo(void *arg){
                 printf("DONE!\n");
 
                 while(threadsWaiting != 0){
-                    printf("Broadcasting til no thread (%d) w8s\n",threadsWaiting);
                     pthread_mutex_unlock(&mtx);
                     pthread_cond_broadcast(&condition);
                 }
@@ -332,21 +340,10 @@ void *goThreadGo(void *arg){
 
         browseDirectory();
         callsToOpenDir++;
-        //
 
+        // Wake up threads to check if work is to be done
+        pthread_cond_broadcast(&condition);
         
-
-
-        // lock 
-        // kö tom? | Lås upp
-        // |        Ja -->> 
-        // |        Antalet väntande-trådar = trådar
-        // |        Ja ->   Broadcasta och return
-        // |        Nej ->  Cond-waita
-        // |
-        // Nej --> Kör goThreadGo
-
-
     }
 
 
