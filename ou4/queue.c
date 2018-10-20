@@ -138,7 +138,7 @@ Node *Dequeue(Queue *q)
  * Free the Queue and all contained Nodes.
  */
 void Queue_free(Queue *q){
-    printf("Free:ing queue\n");
+
     while (!Queue_isempty(q))
     {
         Node *n = Dequeue(q);

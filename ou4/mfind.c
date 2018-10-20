@@ -32,13 +32,10 @@ int browseDirectory(void){
     char *parentDirectoryName = dequeueFromQueue();
 
     if (parentDirectoryName == NULL){
-        fprintf(stderr,"NULL parentDirectoryName\n");
-
         return -1;
     }
 
     if (strlen(parentDirectoryName) == 0){ // Empty string from dequeue
-        fprintf(stderr, "empty parentDirectoryName\n");
         return -1;
     }
 
@@ -51,7 +48,6 @@ int browseDirectory(void){
         return -1;
     }
 
-    printf("%08x searching: %s\n",(int)pthread_self(),parentDirectoryName);
     while ((dirEntry = readdir(currDirStream)) != NULL){
 
         // Ignore . and ..
@@ -65,9 +61,9 @@ int browseDirectory(void){
             
             struct stat buffer;
             if (lstat(fullPath, &buffer) < 0){
+                printf("./mfind ");
                 perror(dirEntry->d_name);
             }
-            printf("file!\n");
             switch (buffer.st_mode & S_IFMT){
             case S_IFREG:
 
@@ -107,6 +103,8 @@ int browseDirectory(void){
 
 
 int main(int argc, char** argv){
+
+    printf("\n");
 
     int c;
     
@@ -168,8 +166,6 @@ int main(int argc, char** argv){
         numberOfThreads++;
     }
 
-    printf("Threads: %d\n", numberOfThreads);
-
     pthread_mutex_init(&mtx, NULL);
     pthread_cond_init(&condition, NULL);
 
@@ -178,7 +174,6 @@ int main(int argc, char** argv){
 
     threadArray[0] = pthread_self(); 
     for (int i = 1; i < numberOfThreads; i++){
-        printf("Creating thread\n");
         pthread_t newThread = pthread_self();
         threadArray[i] = newThread;
     }
@@ -190,8 +185,6 @@ int main(int argc, char** argv){
         }
     }
 
-    printf("Main-thread: %08x\n", (int)pthread_self());
-
     goThreadGo(NULL);
 
     // Joining threads
@@ -201,28 +194,14 @@ int main(int argc, char** argv){
 }
 
 void lastThreadFinished(void){
-    printf("%08x calls lastThreadFinished()\n", (int)pthread_self());
-    printf("ThreadArray:\n");
-    for (int i = 0; i < numberOfThreads; i++)
-    {
-        printf("%d|%08x\n", i, (int)threadArray[i]);
-    }
-
+    
     for (int i = 0; i < numberOfThreads; i++){
-        printf("Waiting for %d|%08x\n", i, (int)threadArray[i]);
-
-        if (pthread_equal(threadArray[i], pthread_self()) != 0){
-            printf("don't wait for myself (%08x)\n",(int)pthread_self());
-        }else{
-            printf("%d returned: %08x\n", i, pthread_join(threadArray[i], NULL));
+        if (pthread_equal(threadArray[i], pthread_self()) == 0){
+            pthread_join(threadArray[i], NULL);
         }
     }
 
-    printf("All done\n");
-
     Queue_free(toBeVisitedQueue); // CALL ONLY ONCE
-
-    printf("Queue freed\n");
 
 }
 
@@ -241,26 +220,19 @@ void enqueueCharToQueue(char *name){
 
 // WRAPER Increment lengthOfQueue with 1 threadsafely
 void addDirectoryToQueue(char *newDir){
-    printf("addDirectoryToQueue before-lock\n");
     pthread_mutex_lock(&mtx);
-    printf("addDirectoryToQueue after-lock\n");
 
     enqueueCharToQueue(newDir);
     lengthOfQueue++;
 
-    printf("addDirectoryToQueue before-unlock\n");
     pthread_mutex_unlock(&mtx);
-    printf("addDirectoryToQueue after-unlock\n");
 }
 
 // WRAPER
 char* dequeueFromQueue(void){
-    printf("dequeueFromQueue before-lock\n");
     pthread_mutex_lock(&mtx);
-    printf("dequeueFromQueue after-lock\n");
 
     if(lengthOfQueue == 0){
-        fprintf(stderr,"Queue is already empty\n");
         pthread_mutex_unlock(&mtx);
         return NULL;
     }
@@ -272,9 +244,7 @@ char* dequeueFromQueue(void){
     free(tempNode);
 
     lengthOfQueue--;
-    printf("dequeueFromQueue before-unlock\n");
     pthread_mutex_unlock(&mtx);
-    printf("dequeueFromQueue after-unlock\n");
     return tempName;
 }
 
@@ -282,7 +252,6 @@ char* dequeueFromQueue(void){
 // Function to be called with threads -> Runs search algorithm
 void *goThreadGo(void *arg){
 
-    printf("Thread: %08x calls goThreadGo!\n", (int)pthread_self());
     arg++;
 
     int callsToOpenDir = 0;
@@ -291,44 +260,35 @@ void *goThreadGo(void *arg){
         pthread_mutex_lock(&mtx);
         while (lengthOfQueue == 0 && lastThreadDone == 0){
 
-            printf("\nEmpty queue\n");
-            
             // Only main-thread
             if (numberOfThreads == 1){
 
-                printf("Thread: %08x Reads: %d -1--------------\n", (int)pthread_self(), callsToOpenDir);
+                printf("Thread: %08x Reads: %d\n", (int)pthread_self(), callsToOpenDir);
                 return NULL;
 
             } else if(threadsWaiting == numberOfThreads-1){
                 lastThreadDone = 1;
 
-                printf("Thread %08x reahced end\n",(int)pthread_self());
-
-                printf("threadsWaiting: %d\n", threadsWaiting);
-                printf("numberOfThreads: %d\n", numberOfThreads);
-                printf("DONE!\n");
+                printf("\n");
 
                 while(threadsWaiting != 0){
                     pthread_mutex_unlock(&mtx);
                     pthread_cond_broadcast(&condition);
                 }
 
-                printf("Thread: %08x Reads: %d -2--------------\n", (int)pthread_self(), callsToOpenDir);
+                printf("Thread: %08x Reads: %d\n", (int)pthread_self(), callsToOpenDir);
 
                 return NULL;
             }else{
                 threadsWaiting++;
-                printf("Thread: %08x sleeps\n", (int)pthread_self());
                 pthread_cond_wait(&condition, &mtx);
                 threadsWaiting--;
 
                 // Condwaita
 
                 if(lastThreadDone == 1){
-                    printf("Thread: %08x Reads: %d -3--------------\n", (int)pthread_self(), callsToOpenDir);
+                    printf("Thread: %08x Reads: %d\n", (int)pthread_self(), callsToOpenDir);
                     return NULL;
-                }else{
-                    printf("Thread: %08x wakes up!\n", (int)pthread_self());
                 }
 
             }
@@ -337,7 +297,6 @@ void *goThreadGo(void *arg){
         
         pthread_mutex_unlock(&mtx);
 
-
         browseDirectory();
         callsToOpenDir++;
 
@@ -345,34 +304,5 @@ void *goThreadGo(void *arg){
         pthread_cond_broadcast(&condition);
         
     }
-
-
-    
-
-    //pthread_t id = pthread_self();
-    //printf("Thread: %08x Reads: %d\n", (int)id, callsToOpenDir);
-
     return 0;
 }
-/*
-// Function to be called with threads -> Runs search algorithm
-void *goThreadGo(void *arg){
-    printf("goThreadGo!\n");
-    arg++;
-    int callsToOpenDir = 0;
-
-    while (!isQueueEmpty()){
-
-
-        browseDirectory();        
-        callsToOpenDir++;
-
-
-
-    }
-
-    pthread_t id = pthread_self();
-
-    
-    return 0;
-}*/
