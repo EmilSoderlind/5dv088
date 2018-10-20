@@ -19,11 +19,11 @@
 char *buildFullFilePathconcat(const char *s1, const char *s2);
 void enqueueCharToQueue(char *name);
 int browseDirectory(void);
-void goThreadGo(void);
-    
-int readLengthOfQueue(void);
+void *goThreadGo(void *arg);    
+
 void addDirectoryToQueue(char *newDir);
 char *dequeueFromQueue(void);
-bool isQueueEmpty(void);
+
+void lastThreadFinished(void);
 
 int main(int argc, char **argv);
