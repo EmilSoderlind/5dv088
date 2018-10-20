@@ -50,7 +50,7 @@ int browseDirectory(void){
         perror(parentDirectoryName);
         return -1;
     }
-
+    printf("Searching: %s\n",parentDirectoryName);
     while ((dirEntry = readdir(currDirStream)) != NULL){
 
         // Ignore . and ..
@@ -189,38 +189,11 @@ int main(int argc, char** argv){
         }
     }
 
-    //list_append(&list,"testDir");
-    //list_append(&list,"testDir/deepFold");
-
-    /*
-    pthread_t rthread;
-    pthread_t wthread;
-
-    if (pthread_create(&rthread, NULL, &rCode, NULL))
-    {
-        fprintf(stderr, "Couldn't create r thread\n");
-        exit(1);
-    }
-
-    if (pthread_create(&wthread, NULL, &wCode, NULL))
-    {
-        fprintf(stderr, "Couldn't create w thread\n");
-        exit(1);
-    }
-
-    printf("main thread waiting\n");
-    pthread_join(rthread, NULL);
-    pthread_join(wthread, NULL);
-    printf("Threads done!\n");
-    printf("arr[0] -> %d\n", arr[0]);
-    */
-
     printf("Main-thread: %08x\n", (int)pthread_self());
 
     goThreadGo(NULL);
 
-    printf("Main-thread returned -> return 0\n");
-
+    // Joining threads
     lastThreadFinished();
 
     return 0;
