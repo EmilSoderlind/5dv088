@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <limits.h>
-
 #include <pthread.h>
 
 #include <sys/types.h>
@@ -19,10 +18,13 @@
 char *buildFullFilePathconcat(const char *s1, const char *s2);
 void enqueueCharToQueue(char *name);
 int browseDirectory(void);
-void *goThreadGo(void *arg);    
+void *goThreadGo(void *arg);
 
 void addDirectoryToQueue(char *newDir);
 char *dequeueFromQueue(void);
+void printThreadWork(int callsToOpenDir);
+
+void checkStartFoldersIfGoal(char* parentDirectoryName);
 
 void lastThreadFinished(void);
 
