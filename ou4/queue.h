@@ -1,6 +1,7 @@
 
 // Efter tillåtelse från Anton Eriksson använder jag vederbörandes kö från:
 // https://github.com/krokerik/5DV088/blob/master/lab3/queue.h
+// Se PDF
 
 /*
  * queue.h
