@@ -88,13 +88,15 @@ int searchDirectory(void){
     }
 
     if (strlen(parentDirectoryName) == 0){ // Empty string from dequeue
-        return -1;
+      free(parentDirectoryName);
+      return -1;
     }
 
     DIR *currDirStream;
     struct dirent *dirEntry;
 
     if ((currDirStream = opendir(parentDirectoryName)) == NULL){
+        free(parentDirectoryName);
         perror(parentDirectoryName);
         return -1;
     }
@@ -190,6 +192,9 @@ void enqueueCharToQueue(char *name){
     //Node *start_dir = Node_init((sizeof(name)*2));
     Node *start_dir = Node_create();
     char *stringToBeEnqueued = (char *)malloc((strlen(name) + 1) * sizeof(char));
+
+    printf("Allocating %lu for %s\n", (strlen(name) + 1) * sizeof(char),name);
+
     // check malloc for NULL
     if(stringToBeEnqueued == NULL){
       fprintf(stderr, "Could not allocate memory.\n");
@@ -251,10 +256,12 @@ char* dequeueFromQueue(void){
     free(tempNode);
 
     lengthOfQueue--;
+
     if(pthread_mutex_unlock(&mtx) != 0){
       perror("pthread_mutex_unlock");
       exit(-1);
     }
+
     return tempName;
 }
 
