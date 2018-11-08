@@ -193,8 +193,6 @@ void enqueueCharToQueue(char *name){
     Node *start_dir = Node_create();
     char *stringToBeEnqueued = (char *)malloc((strlen(name) + 1) * sizeof(char));
 
-    printf("Allocating %lu for %s\n", (strlen(name) + 1) * sizeof(char),name);
-
     // check malloc for NULL
     if(stringToBeEnqueued == NULL){
       fprintf(stderr, "Could not allocate memory.\n");
