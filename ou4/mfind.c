@@ -290,7 +290,7 @@ void *threadLoop(void *arg){
         exit(-1);
       }
 
-      while (lengthOfQueue == 0 && lastThreadDone == 0){
+      if (lengthOfQueue == 0 && lastThreadDone == 0){
 
             // Only main-thread
             if (numberOfThreads == 1){
