@@ -95,9 +95,9 @@ int searchDirectory(void){
     struct dirent *dirEntry;
 
     if ((currDirStream = opendir(parentDirectoryName)) == NULL){
-        //free(parentDirectoryName);
-        //perror(parentDirectoryName);
-        return -1;
+      perror(parentDirectoryName);
+      free(parentDirectoryName);
+      return -1;
     }
 
         while ((dirEntry = readdir(currDirStream)) != NULL)
