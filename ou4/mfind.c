@@ -1,4 +1,3 @@
-
 #include "mfind.h"
 
 int lengthOfQueue = 0;
@@ -290,7 +289,7 @@ void *threadLoop(void *arg){
         exit(-1);
       }
 
-      if (lengthOfQueue == 0 && lastThreadDone == 0){
+      while (lengthOfQueue == 0 && lastThreadDone == 0){
 
             // Only main-thread
             if (numberOfThreads == 1){
@@ -305,14 +304,14 @@ void *threadLoop(void *arg){
 
                 while(threadsWaiting != 0){
 
-                    if(pthread_mutex_unlock(&mtx) != 0){
-                      perror("pthread_mutex_unlock");
-                      exit(-1);
-                    }
-                    if(pthread_cond_broadcast(&condition) != 0){
-                      perror("pthread_cond_broadcast");
-                      exit(-1);
-                    }
+                  if(pthread_cond_broadcast(&condition) != 0){
+                    perror("pthread_cond_broadcast");
+                    exit(-1);
+                  }
+                  if(pthread_mutex_unlock(&mtx) != 0){
+                    perror("pthread_mutex_unlock");
+                    exit(-1);
+                  }
                 }
 
                 printThreadWork(callsToOpenDir);
@@ -346,11 +345,18 @@ void *threadLoop(void *arg){
         callsToOpenDir++;
 
         // Wake up threads to check if work is to be done
+        if(pthread_mutex_lock(&mtx) != 0){
+          perror("pthread_mutex_lock");
+          exit(-1);
+        }
         if(pthread_cond_broadcast(&condition) != 0){
           perror("pthread_cond_broadcast");
           exit(-1);
         }
-
+        if(pthread_mutex_unlock(&mtx) != 0){
+          perror("pthread_mutex_unlock");
+          exit(-1);
+        }
     }
     return 0;
 }
@@ -368,31 +374,40 @@ int main(int argc, char** argv){
 
     int c;
 
-    int pflag = 0;
-    char *pvalue = "";
-
     while ((c = getopt(argc, argv, "t:p:")) != -1){
-        switch (c){
-            case 't':
-                tflag = 1;
-                tvalue = optarg;
-                break;
-            case 'p':
-                pflag = 1;
-                pvalue = optarg;
-                break;
-            case '?':
-                if (optopt == 'c'){
-                    fprintf(stderr, "Option -%c requires an argument.\n", optopt);
-                }else if (isprint(optopt)){
-                    fprintf(stderr, "Unknown option `-%c'.\n", optopt);
-                }else{
-                    fprintf(stderr,
-                            "Unknown option character `\\x%x'.\n",optopt);
-                return -1;
-                }
-            default:
-                return -1;
+
+        if(c == 't'){
+            switch(*optarg){
+                case 'f':
+                    tflag = 1;
+                    tvalue = optarg;
+                    break;
+                case 'd':
+                    tflag = 1;
+                    tvalue = optarg;
+                    break;
+                case 'l':
+                    tflag = 1;
+                    tvalue = optarg;
+                    break;
+                default:
+                    fprintf(stderr, "Unknown option character\n");
+                    return(-1);
+                    break;
+            }
+        }else if(c == 'p'){
+            numberOfThreads = atoi(optarg);
+            if (numberOfThreads < 1){
+                fprintf(stderr, "Invalid thread number\n");
+                return(-1);
+
+            // If not given -> mainthread #1
+            }else if (numberOfThreads == 0){
+                numberOfThreads++;
+            }
+        }else{
+            fprintf(stderr, "Invalid flag-format\n");
+            return -1;
         }
     }
 
@@ -405,7 +420,7 @@ int main(int argc, char** argv){
         return -1;
     }
 
-    // Check for valid type flag/value
+    // Check for valid type flag/value (Nothing other than d/f/l)
     if(tflag == 1){
       // Not directory
       if((strcmp(tvalue, "d") != 0)){
@@ -420,23 +435,16 @@ int main(int argc, char** argv){
       }
     }
 
-    // Check length of pvalue
-    if(pflag == 1){
-      if(atoi(pvalue) == 0){
-        fprintf(stderr,"Invalid -p value. Positive number is required.\n");
-        return -1;
-      }
-    }
-
     filenameGoal = argv[argc - 1];
 
-    // Calculating which argv-indexes startFolders have
-    int startFolderIndex = 1;
-    if(pflag){
-        startFolderIndex += 2;
-    }if(tflag){
-        startFolderIndex += 2;
+    // Missing filenameGoal or start
+    if (argc - optind < 2) {
+      fprintf(stderr, "Missing goal-name and/or start directory\n");
+      return(-1);
     }
+
+    // Which argv-indexe startFolders begins at (optind)
+    int startFolderIndex = optind;
 
     // Creating queue
     toBeVisitedQueue = Queue_create();
@@ -458,12 +466,6 @@ int main(int argc, char** argv){
         checkStartFoldersIfGoal(argv[i]);
     }
 
-    numberOfThreads = atoi(pvalue);
-
-    // If not given -> mainthread #1
-    if(numberOfThreads == 0){
-        numberOfThreads++;
-    }
 
     // Creating threads
     threadArray[0] = pthread_self();
