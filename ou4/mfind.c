@@ -302,8 +302,13 @@ void *threadLoop(void *arg){
             // Only main-thread
             if (numberOfThreads == 1){
 
-                printThreadWork(callsToOpenDir);
-                return NULL;
+              if(pthread_mutex_unlock(&mtx) != 0){
+                perror("pthread_mutex_unlock");
+                exit(-1);
+              }
+
+              printThreadWork(callsToOpenDir);
+              return NULL;
 
 
             } else if(threadsWaiting == numberOfThreads-1){
