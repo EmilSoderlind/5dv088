@@ -520,10 +520,11 @@ int main(int argc, char** argv){
 
     joinThreads();
 
+    /*
     if(pthread_mutex_unlock(&mtx) != 0){
       perror("pthread_mutex_unlock");
       exit(-1);
-    }
+    }*/
 
     return 0;
 }
