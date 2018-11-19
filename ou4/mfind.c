@@ -341,8 +341,12 @@ void *threadLoop(void *arg){
                   }
                 }
 
-
                 printThreadWork(callsToOpenDir);
+
+                if(pthread_mutex_unlock(&mtx) != 0){
+                  perror("pthread_mutex_unlock");
+                  exit(-1);
+                }
 
                 return NULL;
 
