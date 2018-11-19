@@ -305,30 +305,26 @@ void *threadLoop(void *arg){
                 printThreadWork(callsToOpenDir);
                 return NULL;
 
+
             } else if(threadsWaiting == numberOfThreads-1){
+              // Last thread is done + everyone is sleeping
               printf("Thread: %08x is Last thread done working\n", (int)pthread_self());
-                lastThreadDone = 1;
 
-                printf("\n");
+              // Work done flag
+              lastThreadDone = 1;
 
-                  printf("DONE - pthread_cond_broadcast\n");
-                  if(pthread_cond_broadcast(&condition) != 0){
-                    perror("pthread_cond_broadcast");
-                    exit(-1);
-                  }
-                  printf("DONE - pthread_mutex_unlock\n");
-                  if(pthread_mutex_unlock(&mtx) != 0){
-                    perror("pthread_mutex_unlock");
-                    exit(-1);
-                  }
+              printf("\n");
 
+              // Waking up sleeping threads til everyone is awake
                 while(threadsWaiting != 0){
                   printf("Done-while(true) - threadsWaiting: %d\n", threadsWaiting);
                   printf("Wakywaky! - 1 - pthread_mutex_lock\n");
-                  /*if(pthread_mutex_lock(&mtx) != 0){
+
+                  if(pthread_mutex_lock(&mtx) != 0){
                     perror("pthread_mutex_lock");
                     exit(-1);
-                  }*/
+                  }
+
                   printf("Wakywaky! - 2 - pthread_cond_broadcast\n");
                   if(pthread_cond_broadcast(&condition) != 0){
                     perror("pthread_cond_broadcast");
@@ -346,6 +342,7 @@ void *threadLoop(void *arg){
 
                 printf("Done-Thread returning!\n");
                 return NULL;
+
             }else{
 
                 threadsWaiting++;
