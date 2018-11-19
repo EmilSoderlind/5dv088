@@ -325,10 +325,12 @@ void *threadLoop(void *arg){
                   printf("Done-while(true) - threadsWaiting: %d\n", threadsWaiting);
                   printf("Wakywaky! - 1 - pthread_mutex_lock\n");
 
+                  /*
                   if(pthread_mutex_lock(&mtx) != 0){
                     perror("pthread_mutex_lock");
                     exit(-1);
                   }
+                  */
 
                   printf("Wakywaky! - 2 - pthread_cond_broadcast\n");
                   if(pthread_cond_broadcast(&condition) != 0){
