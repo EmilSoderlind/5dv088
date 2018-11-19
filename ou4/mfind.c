@@ -321,7 +321,20 @@ void *threadLoop(void *arg){
               printf("\n");
 
               // Waking up sleeping threads til everyone is awake
-                while(threadsWaiting != 0){
+                  if(pthread_mutex_unlock(&mtx) != 0){
+                    perror("pthread_mutex_unlock");
+                    exit(-1);
+                  }
+
+                while(true){
+                  if(pthread_mutex_lock(&mtx) != 0){
+                    perror("pthread_mutex_lock");
+                    exit(-1);
+                  }
+			              if (threadsWaiting == 0){
+				                  break;
+                    }
+
                   printf("Done-while(true) - threadsWaiting: %d\n", threadsWaiting);
                   printf("Wakywaky! - 1 - pthread_mutex_lock\n");
 
@@ -366,6 +379,8 @@ void *threadLoop(void *arg){
                 if(lastThreadDone == 1){
                   printf("I woke up - signing off\n");
                   printThreadWork(callsToOpenDir);
+
+		  pthread_mutex_unlock(&mtx);
                   return NULL;
                 }
             }
@@ -525,6 +540,10 @@ int main(int argc, char** argv){
 
     joinThreads();
 
+    if(pthread_mutex_unlock(&mtx) != 0){
+      perror("pthread_mutex_unlock");
+      exit(-1);
+    }
 
     printf("Main thread dies --\n");
     return 0;
