@@ -170,7 +170,6 @@ int searchDirectory(void){
 /*  Called by Main-thread to wait for threads to exit before returning in main
 */
 void joinThreads(void){
-  printf("joinThreads\n");
 
     for (int i = 0; i < numberOfThreads; i++){
         if (pthread_equal(threadArray[i], pthread_self()) == 0){
@@ -214,11 +213,10 @@ void addDirectoryToQueue(char *newDir){
 
   int error = pthread_mutex_lock(&mtx);
     if(error != 0){
-      printf("Got errorcode: %d\n", error);
+      fprintf(stderr,"Got errorcode: %d\n", error);
       perror("pthread_mutex_lock");
       exit(-1);
     }
-    printf("Thread: %08x locked: %d\n", (int)pthread_self(),__LINE__);
 
     enqueueCharToQueue(newDir);
     lengthOfQueue++;
@@ -227,7 +225,6 @@ void addDirectoryToQueue(char *newDir){
       perror("pthread_mutex_unlock");
       exit(-1);
     }
-    printf("Thread: %08x unlocked: %d\n", (int)pthread_self(),__LINE__);
 
 }
 
@@ -241,14 +238,13 @@ char* dequeueFromQueue(void){
     perror("pthread_mutex_lock");
     exit(-1);
   }
-  printf("Thread: %08x locked: %d\n", (int)pthread_self(),__LINE__);
 
     if(lengthOfQueue == 0){
       if(pthread_mutex_unlock(&mtx) != 0){
         perror("pthread_mutex_unlock");
         exit(-1);
       }
-      printf("Thread: %08x unlocked: %d\n", (int)pthread_self(),__LINE__);
+
       return NULL;
     }
 
@@ -264,7 +260,6 @@ char* dequeueFromQueue(void){
       perror("pthread_mutex_unlock");
       exit(-1);
     }
-    printf("Thread: %08x unlocked: %d\n", (int)pthread_self(),__LINE__);
 
     return tempName;
 }
@@ -295,7 +290,6 @@ void *threadLoop(void *arg){
         perror("pthread_mutex_lock");
         exit(-1);
       }
-      printf("Thread: %08x locked: %d\n", (int)pthread_self(),__LINE__);
 
       while (lengthOfQueue == 0 && lastThreadDone == 0){
 
@@ -313,44 +307,34 @@ void *threadLoop(void *arg){
 
             } else if(threadsWaiting == numberOfThreads-1){
               // Last thread is done + everyone is sleeping
-              printf("Thread: %08x is Last thread done working\n", (int)pthread_self());
 
               // Work done flag
               lastThreadDone = 1;
 
               printf("\n");
 
-              // Waking up sleeping threads til everyone is awake
                   if(pthread_mutex_unlock(&mtx) != 0){
                     perror("pthread_mutex_unlock");
                     exit(-1);
                   }
 
+
+                // Waking up sleeping threads til everyone is awake
                 while(true){
+
                   if(pthread_mutex_lock(&mtx) != 0){
                     perror("pthread_mutex_lock");
                     exit(-1);
                   }
-			              if (threadsWaiting == 0){
-				                  break;
-                    }
 
-                  printf("Done-while(true) - threadsWaiting: %d\n", threadsWaiting);
-                  printf("Wakywaky! - 1 - pthread_mutex_lock\n");
-
-                  /*
-                  if(pthread_mutex_lock(&mtx) != 0){
-                    perror("pthread_mutex_lock");
-                    exit(-1);
+                  if (threadsWaiting == 0){
+				            break;
                   }
-                  */
 
-                  printf("Wakywaky! - 2 - pthread_cond_broadcast\n");
                   if(pthread_cond_broadcast(&condition) != 0){
                     perror("pthread_cond_broadcast");
                     exit(-1);
                   }
-                  printf("Wakywaky! - 3 - pthread_mutex_unlock\n");
                   if(pthread_mutex_unlock(&mtx) != 0){
                     perror("pthread_mutex_unlock");
                     exit(-1);
@@ -360,27 +344,27 @@ void *threadLoop(void *arg){
 
                 printThreadWork(callsToOpenDir);
 
-                printf("Done-Thread returning!\n");
                 return NULL;
 
             }else{
 
                 threadsWaiting++;
-
                 // Cond-wait
                 if(pthread_cond_wait(&condition, &mtx) != 0){
                   perror("pthread_cond_wait");
                   exit(-1);
                 }
-
                 threadsWaiting--;
 
-                printf("I woke up - lastThreadDone: %d\n", lastThreadDone);
                 if(lastThreadDone == 1){
-                  printf("I woke up - signing off\n");
+
                   printThreadWork(callsToOpenDir);
 
-		  pthread_mutex_unlock(&mtx);
+                  if(pthread_mutex_unlock(&mtx) != 0){
+                    perror("pthread_mutex_unlock");
+                    exit(-1);
+                  }
+
                   return NULL;
                 }
             }
@@ -391,7 +375,6 @@ void *threadLoop(void *arg){
           perror("pthread_mutex_unlock");
           exit(-1);
         }
-        printf("Thread: %08x unlocked: %d\n", (int)pthread_self(),__LINE__);
 
         searchDirectory();
         callsToOpenDir++;
@@ -401,17 +384,14 @@ void *threadLoop(void *arg){
           perror("pthread_mutex_lock");
           exit(-1);
         }
-        printf("Thread: %08x locked: %d\n", (int)pthread_self(),__LINE__);
         if(pthread_cond_broadcast(&condition) != 0){
           perror("pthread_cond_broadcast");
           exit(-1);
         }
-        printf("Thread: %08x broadcasted: %d - Could be more work now\n", (int)pthread_self(),__LINE__);
         if(pthread_mutex_unlock(&mtx) != 0){
           perror("pthread_mutex_unlock");
           exit(-1);
         }
-        printf("Thread: %08x unlocked: %d\n", (int)pthread_self(),__LINE__);
     }
     return 0;
 }
@@ -545,6 +525,5 @@ int main(int argc, char** argv){
       exit(-1);
     }
 
-    printf("Main thread dies --\n");
     return 0;
 }
