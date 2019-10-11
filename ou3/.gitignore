@@ -1,0 +1,6 @@
+	.gitignore
+	execute.o
+	mish
+	mish.o
+	parser.o
+	sighant.o
